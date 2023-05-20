@@ -85,7 +85,7 @@ This plugin allows you to add your own custom calendar systems. Each calendar sy
 ## License
 This project is DUAL LICENSED.
 
-* For non-commercial use, this project uses the MIT licence.
+* For non-commercial use, this project uses the Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) licence.
 * For commercial use (when you or your company earns revenue directly or indirectly using this project), a valid commercial licensed is required.
 
 **Please see the [LICENSE.md](LICENSE.md) file for details.**

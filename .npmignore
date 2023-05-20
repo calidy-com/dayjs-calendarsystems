@@ -32,6 +32,7 @@ prettier.config.js
 *.log
 
 #doc
+CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 docs
 
