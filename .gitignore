@@ -48,6 +48,7 @@ tsconfig.tsbuildinfo
 /calendarSystems
 /calendarUtils
 /index.d.ts
+/*.min.js
 
 # Linting
 lint-results

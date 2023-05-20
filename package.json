@@ -100,9 +100,10 @@
     "url": "https://github.com/calidy-com/dayjs-calendarsystems.git"
   },
   "files": [
-    "calendarsystems",
+    "calendarSystems",
     "calendarUtils",
-    "*.md"
+    "*.md",
+    "*.min.js",
   ],
   "devDependencies": {
     "@babel/cli": "^7.21.5",
