@@ -115,7 +115,7 @@
   },
   "files": [
     "dist",
-    "LICENSE*"
+    "*.md"
   ],
   "devDependencies": {
     "@babel/cli": "^7.21.5",

@@ -17,7 +17,7 @@ dev
 src
 test
 types
-build
+builder
 .editorconfig
 .eslintignore
 .npmrc
@@ -32,8 +32,6 @@ prettier.config.js
 *.log
 
 #doc
-CODE_OF_CONDUCT.md
-CONTRIBUTING.md
 docs
 
 #other
