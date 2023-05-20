@@ -26,7 +26,7 @@ async function build(option) {
       // run builds sequentially to limit RAM usage
       await build(configFactory({
         input: `./src/calendarUtils/${tool}`,
-        fileName: `./calendarUtils/${tool}.js`,
+        fileName: `./calendarUtils/${tool}`,
         name: `dayjs_calendarsystems_calendarutils_${formatName(tool)}`
       }))
     }
@@ -36,7 +36,7 @@ async function build(option) {
       // run builds sequentially to limit RAM usage
       await build(configFactory({
         input: `./src/calendarSystems/${plugin}`,
-        fileName: `./calendarSystems/${plugin}.js`,
+        fileName: `./calendarSystems/${plugin}`,
         name: `dayjs_calendarsystems_${formatName(plugin)}`
       }))
     }
