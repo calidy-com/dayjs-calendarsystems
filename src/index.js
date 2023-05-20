@@ -39,9 +39,9 @@ export default (options, dayjsClass, dayjsFactory) => {
 
   // Register a new calendar system
   dayjsFactory.registerCalendarSystem = (name, calendarSystem) => {
-    if (!(calendarSystem instanceof CalendarSystemBase)) {
-        throw new Error('Calendar system must extend CalendarSystemBase');
-      }
+    if (calendarSystem.constructor.typeName !== 'CalendarSystemBase') {
+      throw new Error('Calendar system must extend CalendarSystemBase');
+    }
 
     calendarSystems[name] = calendarSystem;
 

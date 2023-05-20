@@ -12,7 +12,6 @@
 import CalendarSystemBase from './CalendarSystemBase';
 
 export default class GregoryCalendarSystem extends CalendarSystemBase {
-
      convertFromGregorian(date) {
         // extract year, month, day from date.
         // date can be of type Date, Dayjs or object.

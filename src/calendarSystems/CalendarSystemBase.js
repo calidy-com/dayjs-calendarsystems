@@ -14,6 +14,8 @@
 // "iso8601", "japanese", "persian", "roc", "islamicc".
 
 export default class CalendarSystemBase {
+    static typeName = 'CalendarSystemBase';
+    
     constructor(locale = 'en') {
         this.locale = locale;
     }
