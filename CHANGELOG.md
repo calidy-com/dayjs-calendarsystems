@@ -14,7 +14,3 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Licensing update, fix author and contributors fields and info ([060e607](https://github.com/calidy-com/dayjs-calendarsystems/commit/060e60770ca8cc36280ea059a093054c4fa89a40))
 * Licensing update, fix author and contributors fields and info ([9adc7b9](https://github.com/calidy-com/dayjs-calendarsystems/commit/9adc7b9f1c7125fa245c11f709872d878ee2886b))
-
-# Changelog
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.

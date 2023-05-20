@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Calendar Systems Management for Day.js",
   "main": "dist/dayjs-calendarsystems.cjs.js",
+  "umd:main": "dist/dayjs-calendarsystems.umd.js",
   "web": "dist/dayjs-calendarsystems.umd.js",
   "module": "dist/dayjs-calendarsystems.esm.js",
   "jsnext:main": "dist/dayjs-calendarsystems.esm.js",
@@ -113,7 +114,8 @@
     "url": "https://github.com/calidy-com/dayjs-calendarsystems.git"
   },
   "files": [
-    "dist"
+    "dist",
+    "LICENSE*"
   ],
   "devDependencies": {
     "@babel/cli": "^7.21.5",
