@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.12](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.0.11...v1.0.12) (2023-05-20)
+
+
+### Bug Fixes
+
+* workaround for minification and classnames check ([3ec030f](https://github.com/calidy-com/dayjs-calendarsystems/commit/3ec030fc5606ccc21cc900fe25ba7a222288ea6b))
+
 ### [1.0.11](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.0.10...v1.0.11) (2023-05-20)
 
 
