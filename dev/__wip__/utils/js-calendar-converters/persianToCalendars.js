@@ -7,7 +7,7 @@
 *              No external libraries or complex mathematical/astronomical formulas.
 *
 * @version   : 1.00
-* @author    : Amir Moradi
+* @author    : Calidy.com, Amir Moradi (https://calidy.com/)
 * @date      : 17 May 2023
 * @licence   : SEE LICENCE FILE LICENSE.md
 * @param     : year   : (numeric) [required] persian year  (-280803 to 281510)

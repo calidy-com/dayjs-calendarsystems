@@ -1,7 +1,7 @@
 /**
  * Function to extract function names from a JavaScript file
  * @license see LICENSE file included in the project
- * @author Amir Moradi <https://amirmoradi.com>
+ * @author Calidy.com, Amir Moradi (https://calidy.com/)
  * @description see README.md file included in the project
  * @param {string} file Path to the JavaScript file
  */

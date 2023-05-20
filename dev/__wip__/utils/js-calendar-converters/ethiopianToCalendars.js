@@ -4,7 +4,7 @@
 * @purpose   : Converts Ethiopian Date to other Calendars' Dates.
 *
 * @version   : 1.00
-* @author    : Amir Moradi
+* @author    : Calidy.com, Amir Moradi (https://calidy.com/)
 * @date      : 17 May 2023
 * @licence   : SEE LICENCE FILE LICENSE.md
 * @param     : year   : (numeric) [required] Ethiopian year

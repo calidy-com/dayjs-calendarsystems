@@ -1,7 +1,7 @@
 /**
  * @fileoverview This file contains utility functions for working with the Intl API.
  * @license see LICENSE file included in the project
- * @author Amir Moradi <https://amirmoradi.com>
+ * @author Calidy.com, Amir Moradi (https://calidy.com/)
  * @description see README.md file included in the project
  * 
  */

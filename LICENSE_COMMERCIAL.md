@@ -1,6 +1,6 @@
 # Commercial License Agreement
 
-This License Agreement ("Agreement") is a legal agreement between you (either an individual or an entity) and Amir Moradi ("Licensor"). This Agreement governs your use of this software and any related documentation ("Software").
+This License Agreement ("Agreement") is a legal agreement between you (either an individual or an entity) and Calidy.com ("Licensor"). This Agreement governs your use of this software and any related documentation ("Software").
 
 **1. Grant of License**
 

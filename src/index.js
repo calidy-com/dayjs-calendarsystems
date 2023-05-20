@@ -1,7 +1,7 @@
 /**
  * Day.js calendar systems plugin
  * @license see LICENSE file included in the project
- * @author Amir Moradi <https://amirmoradi.com>
+ * @author Calidy.com, Amir Moradi (https://calidy.com/)
  * @description see README.md file included in the project
  * 
  * This plugin allows Day.js to work with different calendar systems.
