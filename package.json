@@ -65,21 +65,6 @@
       "^.+\\.js$": "<rootDir>/jest.transform.js"
     }
   },
-  "release": {
-    "prepare": [
-      {
-        "path": "@semantic-release/changelog"
-      },
-      [
-        "@semantic-release/git",
-        {
-          "assets": [
-            "CHANGELOG.md"
-          ]
-        }
-      ]
-    ]
-  },
   "keywords": [
     "dayjs",
     "date",
