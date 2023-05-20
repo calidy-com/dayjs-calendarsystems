@@ -2,17 +2,17 @@
   "name": "@calidy/dayjs-calendarsystems",
   "version": "1.0.7",
   "description": "Calendar Systems Management for Day.js",
-  "main": "dist/dayjs-calendarsystems.cjs.js",
-  "umd:main": "dist/dayjs-calendarsystems.umd.js",
-  "web": "dist/dayjs-calendarsystems.umd.js",
-  "module": "dist/dayjs-calendarsystems.esm.js",
-  "jsnext:main": "dist/dayjs-calendarsystems.esm.js",
+  "main": "dayjs-calendarsystems.cjs.min.js",
+  "umd:main": "dayjs-calendarsystems.umd.min.js",
+  "web": "dayjs-calendarsystems.umd.min.js",
+  "module": "dayjs-calendarsystems.esm.min.js",
+  "jsnext:main": "dayjs-calendarsystems.esm.min.js",
   "types": "index.d.ts",
   "scripts": {
     "test": "jest",
-    "lint": "./node_modules/.bin/eslint src/* test/* dist/*",
+    "lint": "./node_modules/.bin/eslint src/* test/*",
     "prettier": "prettier --write \"docs/**/*.md\"",
-    "babel": "cross-env BABEL_ENV=build babel src --out-dir esm --copy-files && node dist/esm",
+    "babel": "cross-env BABEL_ENV=build babel src --out-dir esm --copy-files && node esm",
     "build": "node builder && yarn size",
     "sauce": "npx karma start karma.sauce.conf.js",
     "test:sauce": "npm run sauce -- 0 && npm run sauce -- 1 && npm run sauce -- 2  && npm run sauce -- 3",
@@ -27,21 +27,21 @@
   "size-limit": [
     {
       "limit": "2.99 KB",
-      "path": "dist/dayjs-calendarsystems.umd.js",
+      "path": "dayjs-calendarsystems.umd.min.js",
       "ignore": [
         "dayjs"
       ]
     },
     {
       "limit": "2.99 KB",
-      "path": "dist/dayjs-calendarsystems.cjs.js",
+      "path": "dayjs-calendarsystems.cjs.min.js",
       "ignore": [
         "dayjs"
       ]
     },
     {
       "limit": "2.99 KB",
-      "path": "dist/dayjs-calendarsystems.esm.js",
+      "path": "dayjs-calendarsystems.esm.min.js",
       "ignore": [
         "dayjs"
       ]
@@ -100,7 +100,8 @@
     "url": "https://github.com/calidy-com/dayjs-calendarsystems.git"
   },
   "files": [
-    "dist",
+    "calendarsystems",
+    "calendarUtils",
     "*.md"
   ],
   "devDependencies": {

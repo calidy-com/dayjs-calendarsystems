@@ -19,7 +19,7 @@ module.exports = (config) => {
     output: {
       file: fileName,
       format: format,
-      name: name || 'dayjs',
+      name: name || 'dayjs_calendarsystems',
       globals: {
         dayjs: 'dayjs'
       },

@@ -44,7 +44,10 @@ tsconfig.tsbuildinfo
 .turbo
 
 # Builds
-dist
+/dist
+/calendarSystems
+/calendarUtils
+/index.d.ts
 
 # Linting
 lint-results

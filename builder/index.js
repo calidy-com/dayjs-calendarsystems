@@ -25,9 +25,9 @@ async function build(option) {
     for (const tool of tools) {
       // run builds sequentially to limit RAM usage
       await build(configFactory({
-        input: `./src/utils/${tool}`,
-        fileName: `./dist/utils/${tool}.js`,
-        name: `dayjs_calendarSystems_utils_${formatName(tool)}`
+        input: `./src/calendarUtils/${tool}`,
+        fileName: `./calendarUtils/${tool}.js`,
+        name: `dayjs_calendarsystems_calendarutils_${formatName(tool)}`
       }))
     }
 
@@ -36,36 +36,36 @@ async function build(option) {
       // run builds sequentially to limit RAM usage
       await build(configFactory({
         input: `./src/calendarSystems/${plugin}`,
-        fileName: `./dist/calendarSystems/${plugin}.js`,
-        name: `dayjs_calendarSystems_${formatName(plugin)}`
+        fileName: `./calendarSystems/${plugin}.js`,
+        name: `dayjs_calendarsystems_${formatName(plugin)}`
       }))
     }
 
     build(configFactory({
       input: './src/index.js',
-      fileName: './dist/dayjs-calendarsystems.min.js',
+      fileName: './dayjs-calendarsystems.min.js',
       format: 'umd',
       name: 'dayjs_calendarsystems'
     }))
 
     build(configFactory({
       input: './src/index.js',
-      fileName: './dist/dayjs-calendarsystems.esm.js',
+      fileName: './dayjs-calendarsystems.esm.min.js',
       format: 'esm'
     }))
     build(configFactory({
       input: './src/index.js',
-      fileName: './dist/dayjs-calendarsystems.cjs.js',
+      fileName: './dayjs-calendarsystems.cjs.min.js',
       format: 'cjs'
     }))
     build(configFactory({
       input: './src/index.js',
-      fileName: './dist/dayjs-calendarsystems.umd.js',
+      fileName: './dayjs-calendarsystems.umd.min.js',
       format: 'umd',
       name: 'dayjs_calendarsystems'
     }))
 
-    await promisify(ncp)('./types/', './dist')
+    await promisify(ncp)('./types/', './')
 
   } catch (e) {
     console.error(e) // eslint-disable-line no-console

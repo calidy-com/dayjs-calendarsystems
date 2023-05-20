@@ -10,8 +10,8 @@
  */
 
 import CalendarSystemBase from './CalendarSystemBase';
-import * as CalendarUtils from "../utils/fourmilabCalendar";
-import {generatePersianMonthNames} from '../utils/IntlUtils';
+import * as CalendarUtils from "../calendarUtils/fourmilabCalendar";
+import {generatePersianMonthNames} from '../calendarUtils/IntlUtils';
 
 export default class PersianCalendarSystem extends CalendarSystemBase {
     constructor(locale = 'en') {

@@ -1,5 +1,5 @@
 import PersianCalendarSystem from "../src/calendarSystems/PersianCalendarSystem";
-import * as CalendarUtils from "../src/utils/fourmilabCalendar";
+import * as CalendarUtils from "../src/calendarUtils/fourmilabCalendar";
 
 describe("PersianCalendarSystem", () => {
   let persianCalendar;
