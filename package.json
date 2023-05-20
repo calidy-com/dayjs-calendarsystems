@@ -1,6 +1,6 @@
 {
   "name": "@calidy/dayjs-calendarsystems",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Calendar Systems Management for Day.js",
   "main": "dist/dayjs-calendarsystems.cjs.js",
   "umd:main": "dist/dayjs-calendarsystems.umd.js",
