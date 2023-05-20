@@ -21,7 +21,7 @@ async function build(option) {
 (async () => {
   try {
     /* eslint-disable no-restricted-syntax, no-await-in-loop */
-    const tools = await promisifyReadDir(path.join(__dirname, '../src/utils'))
+    const tools = await promisifyReadDir(path.join(__dirname, '../src/calendarUtils'))
     for (const tool of tools) {
       // run builds sequentially to limit RAM usage
       await build(configFactory({
