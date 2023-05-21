@@ -103,7 +103,8 @@
     "calendarSystems",
     "calendarUtils",
     "*.md",
-    "*.min.js"
+    "*.min.js",
+    "index.d.ts"
   ],
   "devDependencies": {
     "@babel/cli": "^7.21.5",

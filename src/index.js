@@ -6,7 +6,6 @@
  * 
  * This plugin allows Day.js to work with different calendar systems.
  */
-import CalendarSystemBase from "./calendarSystems/CalendarSystemBase";
 import GregoryCalendarSystem from "./calendarSystems/GregoryCalendarSystem";
 
 // The built-in calendar systems
@@ -30,6 +29,10 @@ export default (options, dayjsClass, dayjsFactory) => {
     }, {});
     // Create a new instance of the class with the given date:
     const newInstance = dayjsFactory(date, properties);
+    // Add the $x property (used for timezone) to the new instance:
+    if ("$x" in instance) {
+      newInstance.$x = instance.$x;
+    }
     if ("$C" in instance && instance.$C !== "gregory") {
       // If the calendar system is set, convert the date to the specified calendar system
       return newInstance.toCalendarSystem(instance.$C);
