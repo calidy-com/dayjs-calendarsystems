@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.13](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.0.12...v1.0.13) (2023-05-21)
+
+
+### Bug Fixes
+
+* timezone plugin compatibility. Note: when extending dayjs with plugins, make sure to have utc and timeZone plugins AFTER our calendarSystems plugin ([470b66c](https://github.com/calidy-com/dayjs-calendarsystems/commit/470b66c93c4a2de84110e4c317073b8db65e7501))
+
 ### [1.0.12](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.0.11...v1.0.12) (2023-05-20)
 
 
