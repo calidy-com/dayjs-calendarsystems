@@ -22,6 +22,8 @@ export default (options, dayjsClass, dayjsFactory) => {
         props["locale"] = instance[key];
       } else if (key === "$u") {
         props["utc"] = instance[key];
+      } else if (key === "$offset") {
+        // nothing here as it causes issues with the UTC and Timezone plugins
       } else if (instance[key] !== instance) {
         props[key] = instance[key];
       }
@@ -32,6 +34,10 @@ export default (options, dayjsClass, dayjsFactory) => {
     // Add the $x property (used for timezone) to the new instance:
     if ("$x" in instance) {
       newInstance.$x = instance.$x;
+    }
+    // Add the $u property (used for UTC) to the new instance:
+    if ("$u" in instance && newInstance.$u !== instance.$u) {
+      newInstance.$u = instance.$u;
     }
     if ("$C" in instance && instance.$C !== "gregory") {
       // If the calendar system is set, convert the date to the specified calendar system
