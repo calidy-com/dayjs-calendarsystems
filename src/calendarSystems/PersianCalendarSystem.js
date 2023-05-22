@@ -53,7 +53,7 @@ export default class PersianCalendarSystem extends CalendarSystemBase {
             date.getMonth() + 1,
             date.getDate()
         );
-        const persianDateArray = CalendarUtils.jd_to_persian(julianDay);
+        const persianDateArray = CalendarUtils.jd_to_persiana(julianDay);
         return {
             year: persianDateArray[0],
             month: persianDateArray[1] - 1, // -1 because the Persian month is 0-based
@@ -63,8 +63,8 @@ export default class PersianCalendarSystem extends CalendarSystemBase {
 
     // Expects a zero-based month index
     convertToGregorian(persianYear, persianMonth, persianDay) {
-        const julianDay = CalendarUtils.persian_to_jd(persianYear, persianMonth + 1, persianDay);
-        const gregorianDateArray = CalendarUtils.jd_to_gregorian(julianDay);
+        const julianDay = CalendarUtils.persiana_to_jd(persianYear, persianMonth + 1, persianDay);
+        const gregorianDateArray = CalendarUtils.jd_to_gregorian(julianDay + 0.5);
         return {
             year: gregorianDateArray[0],
             month: gregorianDateArray[1] - 1, // -1 because the Gregorian month is 0-based

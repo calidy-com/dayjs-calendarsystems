@@ -68,8 +68,16 @@ describe("daysInMonth method with different calendar systems", () => {
     const daysInBahman = dateInBahman.daysInMonth();
     expect(daysInBahman).toBe(30);
     
-    const dateInEsfand = dayjs("2024-03-15").tz("Europe/Paris").toCalendarSystem("persian");
-    const daysInEsfand = dateInEsfand.daysInMonth();
-    expect(daysInEsfand).toBe(29); // Esfand in a leap year has 29 days
+    const dateInEsfandNonLeap = dayjs("2024-03-05").tz("Europe/Paris").toCalendarSystem("persian");
+    const daysInEsfandNonLeap = dateInEsfandNonLeap.daysInMonth();
+    expect(daysInEsfandNonLeap).toBe(29); // Esfand in a non leap(normal) year has 29 days
+
+    const dateInEsfand4yrLeap = dayjs("2025-03-05").tz("Europe/Paris").toCalendarSystem("persian");
+    const daysInEsfand4yrLeap = dateInEsfand4yrLeap.daysInMonth();
+    expect(daysInEsfand4yrLeap).toBe(30); // Esfand in a 4-year leap year has 30 days
+
+    const dateInEsfand5yrLeap = dayjs("2030-03-05").tz("Europe/Paris").toCalendarSystem("persian");
+    const daysInEsfand5yrLeap = dateInEsfand5yrLeap.daysInMonth();
+    expect(daysInEsfand5yrLeap).toBe(30); // Esfand in a 5-year leap year has 30 days
   });
 });

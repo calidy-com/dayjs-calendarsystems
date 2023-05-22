@@ -10,7 +10,7 @@ describe("PersianCalendarSystem", () => {
 
   test("convertFromGregorian should return the correct Persian date", () => {
     const date = new Date(2023, 4, 14); // May 14, 2023
-    const [jy, jm, jd] = CalendarUtils.jd_to_persian(
+    const [jy, jm, jd] = CalendarUtils.jd_to_persiana(
       CalendarUtils.gregorian_to_jd(
         date.getFullYear(),
         date.getMonth() + 1,
@@ -26,7 +26,7 @@ describe("PersianCalendarSystem", () => {
   test("convertToGregorian should return the correct Gregorian date", () => {
     const date = { year: 1402, month: 2, day: 25 }; // Persian date: Ordibehesht 25, 1402
     const [gy, gm, gd] = CalendarUtils.jd_to_gregorian(
-      CalendarUtils.persian_to_jd(date.year, date.month, date.day)
+      CalendarUtils.persiana_to_jd(date.year, date.month, date.day) + 0.5
     );
     const convertedDate = persianCalendar.convertToGregorian(
       date.year,

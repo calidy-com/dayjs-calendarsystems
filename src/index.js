@@ -240,7 +240,14 @@ export default (options, dayjsClass, dayjsFactory) => {
       return wrapper(d.date(d.date() + Math.round(n * number)), this);
     };
     if (unit === "month") {
-      return this.set("month", this.$M + number);
+      const n = this.$M + number;
+      const y = n < 0 ? -Math.ceil(-n / 12) : parseInt(n / 12, 10);
+      const d = this.$D;
+      const x = this.set("day", 1)
+        .add(y, "year")
+        .set("month", n - y * 12);
+      return x.set("day", Math.min(x.daysInMonth(), d));
+      //return this.set("month", this.$M + number);
     }
     if (unit === "year") {
       return this.set("year", this.$y + number);
