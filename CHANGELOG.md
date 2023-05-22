@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.19](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.0.18...v1.0.19) (2023-05-22)
+
+
+### Bug Fixes
+
+* persian calendar converter is now using astronomical calculations and fixes leap year calculations. added more tests and cleaned the underlayer converter library. ([c0ea087](https://github.com/calidy-com/dayjs-calendarsystems/commit/c0ea087098f281e0790754f3872770c435ac59cd))
+
 ### [1.0.18](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.0.17...v1.0.18) (2023-05-22)
 
 
