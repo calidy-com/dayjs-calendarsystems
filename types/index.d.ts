@@ -1,7 +1,5 @@
-import { PluginFunc, Dayjs, OpUnitType } from 'dayjs';
-
-type DateLikeObject = { year: number; month: number; day: number; };
-type DayjsLikeObject = { $y: number; $M: number; $D: number; };
+import { PluginFunc, Dayjs } from 'dayjs';
+import { CalendarSystemBase } from './calendarSystems/CalendarSystemBase';
 type CalendarSystem =  'persian' | 'gregorian' | 'islamic' | 'julian' | 'indian' | 'hebrew' | 'ethiopian' | 'coptic' | 'buddhist' | 'japanese' | 'roc' | 'nanakshahi' | 'isoWeek' | 'week' | 'quarter' | 'month' | 'year' | 'decade' | 'century' | 'millennium';
 
 declare module 'dayjs' {
@@ -23,15 +21,6 @@ declare module 'dayjs' {
   const getRegisteredCalendarSystem: DayjsConstructor["getRegisteredCalendarSystem"];
   const toCalendarSystem: DayjsConstructor["toCalendarSystem"];
   const fromCalendarSystem: DayjsConstructor["fromCalendarSystem"];
-}
-
-interface CalendarSystemBase {
-  daysInMonth(year: number, month: number): number;
-  startOf(year: number, month: number, day: number, units: OpUnitType): Dayjs;
-  endOf(year: number, month: number, day: number, units: OpUnitType): Dayjs;
-  convertToGregorian(year: number, month: number, day: number): { year: number, month: number, day: number };
-  convertFromGregorian(date: Date | DateLikeObject | DayjsLikeObject | string | number | undefined | null): { year: number; month: number; day: number; };
-  localeOverride(locale: string): Object;
 }
 
 declare const calendarSystemsPlugin: PluginFunc;
