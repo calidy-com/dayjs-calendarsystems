@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.18](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.0.17...v1.0.18) (2023-05-22)
+
+
+### Bug Fixes
+
+* more typescript cleaning and fixing, add more docs ([4b42986](https://github.com/calidy-com/dayjs-calendarsystems/commit/4b429864b99f3c7355b9b70791f348425548b64f))
+
 ### [1.0.17](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.0.16...v1.0.17) (2023-05-22)
 
 
