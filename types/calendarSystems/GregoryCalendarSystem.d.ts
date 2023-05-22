@@ -3,7 +3,7 @@ import { CalendarSystemBase } from './CalendarSystemBase';
 type DateLikeObject = { year: number; month: number; day: number; };
 type DayjsLikeObject = { $y: number; $M: number; $D: number; };
 
-export declare class GregoryCalendarSystem extends CalendarSystemBase {
+export default class GregoryCalendarSystem extends CalendarSystemBase {
     firstDayOfWeek: number;
     locale: string;
     monthNamesLocalized: string[];

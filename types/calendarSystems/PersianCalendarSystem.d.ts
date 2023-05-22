@@ -3,7 +3,7 @@ import { CalendarSystemBase } from './CalendarSystemBase';
 type DateLikeObject = { year: number; month: number; day: number; };
 type DayjsLikeObject = { $y: number; $M: number; $D: number; };
 
-export declare class PersianCalendarSystem extends CalendarSystemBase {
+export default class PersianCalendarSystem extends CalendarSystemBase {
     firstDayOfWeek: number;
     locale: string;
     monthNamesLocalized: string[];

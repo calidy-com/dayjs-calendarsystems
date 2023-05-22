@@ -19,6 +19,10 @@ declare module 'dayjs' {
     toCalendarSystem(calendar: CalendarSystem): DayjsConstructor;
     fromCalendarSystem(name: CalendarSystem, year: number, month: number, day: number): Dayjs;
   }
+  const registerCalendarSystem: DayjsConstructor["registerCalendarSystem"];
+  const getRegisteredCalendarSystem: DayjsConstructor["getRegisteredCalendarSystem"];
+  const toCalendarSystem: DayjsConstructor["toCalendarSystem"];
+  const fromCalendarSystem: DayjsConstructor["fromCalendarSystem"];
 }
 
 interface CalendarSystemBase {
