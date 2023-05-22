@@ -1,6 +1,6 @@
 import { PluginFunc, Dayjs } from 'dayjs';
 import { CalendarSystemBase } from './calendarSystems/CalendarSystemBase';
-type CalendarSystem =  'persian' | 'gregorian' | 'islamic' | 'julian' | 'indian' | 'hebrew' | 'ethiopian' | 'coptic' | 'buddhist' | 'japanese' | 'roc' | 'nanakshahi' | 'isoWeek' | 'week' | 'quarter' | 'month' | 'year' | 'decade' | 'century' | 'millennium';
+export type CalendarSystem =  'persian' | 'gregorian' | 'islamic' | 'julian' | 'indian' | 'hebrew' | 'ethiopian' | 'coptic' | 'buddhist' | 'japanese' | 'roc' | 'nanakshahi' | 'isoWeek' | 'week' | 'quarter' | 'month' | 'year' | 'decade' | 'century' | 'millennium';
 
 declare module 'dayjs' {
   interface Dayjs {
