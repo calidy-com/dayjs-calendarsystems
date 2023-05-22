@@ -1,6 +1,11 @@
 import { PluginFunc, Dayjs } from 'dayjs';
 import { CalendarSystemBase } from './calendarSystems/CalendarSystemBase';
-export type CalendarSystem =  'persian' | 'gregorian' | 'islamic' | 'julian' | 'indian' | 'hebrew' | 'ethiopian' | 'coptic' | 'buddhist' | 'japanese' | 'roc' | 'nanakshahi' | 'isoWeek' | 'week' | 'quarter' | 'month' | 'year' | 'decade' | 'century' | 'millennium';
+// All Calendar Systems known to Intl API (alphabetical order)
+// 'buddhist' | 'chinese' | 'coptic' | 'dangi' | 'ethioaa' | 'ethiopic' | 'gregory' | 'hebrew' | 'indian' | 'islamic' | 'islamic-civil' | 'islamic-rgsa' | 'islamic-tbla' | 'islamic-umalqura' | 'islamicc' | 'iso8601' | 'japanese' | 'persian' | 'roc'
+// Our supported Calendar Systems (alphabetical order)
+export type CalendarSystem = 'gregory' | 'persian';
+// TODO: export type CalendarSystem = 'gregory' | 'persian' | 'islamic' | 'islamic-umalqura' | 'hebrew' | 'ethiopic';
+// ! Note that we use the default "islamic-umalqura" calendar system for "islamic" calendar system
 
 declare module 'dayjs' {
   interface Dayjs {

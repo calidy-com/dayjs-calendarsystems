@@ -27,10 +27,16 @@ With the `@calidy/dayjs-calendarsystems` plugin, we bring the capacity to run an
 ## Features
 
 - Register and use different calendar systems.
+- Typescript exports and definitions.
+- Compatible with all official Dayjs plugins.
+- No need for hacks, use dayjs apis in the standard way.
+- Small and light plugin, no overhead.
 - Convert between different calendar systems.
 - Default Gregorian calendar system included.
 - Persian Calendar system available.
-- Other calendar systems are still under development.
+- **[WIP]** Islamic (Hijri, Umalqura) Calendar system. Note: we will use the default "islamic-umalqura" calendar system for "islamic" calendar system.
+- **[WIP]** Hebrew (Jewish) Calendar system.
+- **[WIP]** Ethiopian Calendar system.
 - **[TODO]** Parse date strings from different calendar systems
 - **[TODO]** Add more tests for all Dayjs Plugins
 
@@ -60,6 +66,10 @@ import calendarSystems from "@calidy/dayjs-calendarsystems";
 
 import PersianCalendarSystem from "@calidy/dayjs-calendarsystems/calendarSystems/PersianCalendarSystem";
 
+// ...
+// ALL YOU OTHER dayjs.extend() calls
+// ...
+// After all other dayjs plugins are initialized, extend dayjs with our calendar systems plugin:
 dayjs.extend(calendarSystems);
 
 // Register new calendar system
