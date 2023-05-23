@@ -183,41 +183,63 @@ export default (options, dayjsClass, dayjsFactory) => {
   const old$Set = dayjsClass.prototype.$set;
   // Override the default $set method to convert the date to the specified calendar system
   dayjsClass.prototype.$set = function (units, int) {
-    if (("$C" in this && this.$C === "gregory") || !("$C" in this)) {
-      return old$Set.bind(this)(units, int);
-    }
-    const instanceFactory = (d, m, y = this.$y) => {
-      const convertedDate = calendarSystems[this.$C].convertToGregorian(
+    const isGregory = !("$C" in this) || this.$C === "gregory";
+
+    if (isGregory) return old$Set.call(this, units, int);
+
+    const { $d, $u, $C, $y, $M, $D, $H, $m, $s, $ms } = this;
+    const utcPrefix = $u ? "UTC" : "";
+    const setFn = (fn, value) => $d[`set${utcPrefix}${fn}`](value);
+
+    const instanceFactory = (
+      d,
+      M,
+      y = $y,
+      h = $H,
+      m = $m,
+      s = $s,
+      ms = $ms
+    ) => {
+      const { year, month, day } = calendarSystems[$C].convertToGregorian(
         y,
-        m,
+        M,
         d
       );
-      this.$d.setFullYear(convertedDate.year);
-      this.$d.setMonth(convertedDate.month);
-      this.$d.setDate(convertedDate.day);
+
+      setFn("FullYear", year);
+      setFn("Month", month);
+      setFn("Date", day);
+      setFn("Hours", h);
+      setFn("Minutes", m);
+      setFn("Seconds", s);
+      setFn("Milliseconds", ms);
+
       return this;
     };
-    switch (units) {
-      case "date":
-      case "day":
-        instanceFactory(int, this.$M);
-        break;
-      case "month":
-        instanceFactory(this.$D, int);
-        break;
-      case "year":
-        instanceFactory(this.$D, this.$M, int);
-        break;
-      default:
-        return old$Set.bind(this)(units, int);
+
+    const unitSetters = {
+      date: () => instanceFactory(int, $M),
+      day: () => instanceFactory(int, $M),
+      month: () => instanceFactory($D, int),
+      year: () => instanceFactory($D, $M, int),
+      hour: () => instanceFactory($D, $M, $y, int),
+      minute: () => instanceFactory($D, $M, $y, $H, int),
+      second: () => instanceFactory($D, $M, $y, $H, $m, int),
+      millisecond: () => instanceFactory($D, $M, $y, $H, $m, $s, int),
+    };
+
+    if (units in unitSetters) {
+      unitSetters[units]();
+    } else {
+      return old$Set.call(this, units, int);
     }
+
     this.init();
-    if ("$C" in this && this.$C !== "gregory") {
-      return this.toCalendarSystem(this.$C);
-    }
-    return this;
+
+    return $C !== "gregory" ? this.toCalendarSystem($C) : this;
   };
 
+  // Override the default add method to convert the date to the specified calendar system
   const oldAdd = dayjsClass.prototype.add;
   dayjsClass.prototype.add = function (number, units) {
     number = Number(number); // eslint-disable-line no-param-reassign
@@ -289,7 +311,9 @@ export default (options, dayjsClass, dayjsFactory) => {
   };
 
   // Convert a Day.js instance to a specific calendar system
-  dayjsClass.prototype.toCalendarSystem = function (calendar) {
+  dayjsClass.prototype.toCalendarSystem = function (
+    calendar = defaultCalendarSystem
+  ) {
     if (!calendarSystems[calendar]) {
       throw new Error(`Calendar system '${calendar}' is not registered.`);
     }
@@ -333,7 +357,10 @@ export default (options, dayjsClass, dayjsFactory) => {
       }
     }
     // Update the locale to reflect the new calendar system
-    dayjsFactory.updateLocale(newInstance.$L, calendarSystems[calendar].localeOverride(newInstance.$L));
+    dayjsFactory.updateLocale(
+      newInstance.$L,
+      calendarSystems[calendar].localeOverride(newInstance.$L)
+    );
     // dayjsFactory.locale(
     //   newInstance.$L,
     //   {
