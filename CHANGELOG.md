@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.1.0...v1.1.1) (2023-05-23)
+
+
+### Bug Fixes
+
+* add hijri (islamic) to CalendarSystem type export ([605dbe0](https://github.com/calidy-com/dayjs-calendarsystems/commit/605dbe06f089d34d08c4df3dba709c065560a13e))
+
 ## [1.1.0](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.0.19...v1.1.0) (2023-05-23)
 
 
