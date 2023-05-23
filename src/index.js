@@ -322,15 +322,12 @@ export default (options, dayjsClass, dayjsFactory) => {
     // If the instance is not already in the required calendar system, initialize it
     // You would also convert the date to the specified calendar here.
     if (newInstance.$C !== calendar) {
-      // Store the current calendar system in $C
-      newInstance.$C = calendar;
-      // if calendar is gregorian, convert to gregorian, otherwise convert to calendar
+      // if target calendar is gregorian, convert to gregorian, otherwise convert to calendar
       if (calendar === "gregory") {
-        const gregoryDate = newInstance.toDate();
-        const convertedDate = calendarSystems[calendar].convertToGregorian(
-          gregoryDate.getFullYear(),
-          gregoryDate.getMonth(),
-          gregoryDate.getDate()
+        const convertedDate = calendarSystems[newInstance.$C || "gregory"].convertToGregorian(
+          newInstance.$y,
+          newInstance.$M,
+          newInstance.$D
         );
         newInstance.$G_y = convertedDate.year;
         newInstance.$G_M = convertedDate.month;
@@ -355,6 +352,9 @@ export default (options, dayjsClass, dayjsFactory) => {
         newInstance.$M = convertedDate.month;
         newInstance.$D = convertedDate.day;
       }
+
+      // Store the target calendar system in $C
+      newInstance.$C = calendar;
     }
     // Update the locale to reflect the new calendar system
     dayjsFactory.updateLocale(
