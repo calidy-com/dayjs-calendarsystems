@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.3](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.1.2...v1.1.3) (2023-05-23)
+
+
+### Bug Fixes
+
+* complexe calendar system conversions are now working, example: persian to islamic to gregory to persian.... ([3f5c633](https://github.com/calidy-com/dayjs-calendarsystems/commit/3f5c633a0f5b667cc95a7add8b8ce153549bb4e1))
+
 ### [1.1.2](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.1.1...v1.1.2) (2023-05-23)
 
 
