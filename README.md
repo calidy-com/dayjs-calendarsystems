@@ -34,7 +34,7 @@ With the `@calidy/dayjs-calendarsystems` plugin, we bring the capacity to run an
 - Convert between different calendar systems.
 - Default Gregorian calendar system included.
 - Persian Calendar system available.
-- **[WIP]** Islamic (Hijri, Umalqura) Calendar system. Note: we will use the default "islamic-umalqura" calendar system for "islamic" calendar system.
+- Islamic (Hijri, Umalqura) Calendar system. Note: we will use the default "islamic-umalqura" calendar system for "islamic" calendar system.
 - **[WIP]** Hebrew (Jewish) Calendar system.
 - **[WIP]** Ethiopian Calendar system.
 - **[TODO]** Parse date strings from different calendar systems

@@ -3,7 +3,7 @@
  * @license see LICENSE file included in the project
  * @author Calidy.com, Amir Moradi (https://calidy.com/)
  * @description see README.md file included in the project
- * 
+ *
  * This plugin allows Day.js to work with different calendar systems.
  */
 import GregoryCalendarSystem from "./calendarSystems/GregoryCalendarSystem";
@@ -13,9 +13,11 @@ const calendarSystems = {};
 
 // Extend Day.js with the Calendar Systems Plugin
 export default (options, dayjsClass, dayjsFactory) => {
+  let defaultCalendarSystem = "gregory";
+
   const Utils = dayjsClass.prototype.$utils();
 
-  const wrapper = function(date, instance) {
+  const wrapper = function (date, instance) {
     // Get all the properties and their values from the instance:
     const properties = Object.keys(instance).reduce((props, key) => {
       if (key === "$L") {
@@ -48,48 +50,48 @@ export default (options, dayjsClass, dayjsFactory) => {
 
   // Register a new calendar system
   dayjsFactory.registerCalendarSystem = (name, calendarSystem) => {
-    if (calendarSystem.constructor.typeName !== 'CalendarSystemBase') {
-      throw new Error('Calendar system must extend CalendarSystemBase');
+    if (calendarSystem.constructor.typeName !== "CalendarSystemBase") {
+      throw new Error("Calendar system must extend CalendarSystemBase");
     }
 
     calendarSystems[name] = calendarSystem;
 
-      if (typeof calendarSystem.daysInMonth === 'function') {
-        const originalDaysInMonth = dayjsClass.prototype.daysInMonth;
-        dayjsClass.prototype.daysInMonth = function() {
-          if (this.$C && this.$C !== 'gregory') {
-            return calendarSystem.daysInMonth(this.$y, this.$M);
-          } else {
-            return originalDaysInMonth.call(this);
-          }
-        };
-      }
+    if (typeof calendarSystem.daysInMonth === "function") {
+      const originalDaysInMonth = dayjsClass.prototype.daysInMonth;
+      dayjsClass.prototype.daysInMonth = function () {
+        if (this.$C && this.$C !== "gregory") {
+          return calendarSystem.daysInMonth(this.$y, this.$M);
+        } else {
+          return originalDaysInMonth.call(this);
+        }
+      };
+    }
 
-      if (typeof calendarSystem.startOf === 'function') {
-        const originalStartOf = dayjsClass.prototype.startOf;
-        dayjsClass.prototype.startOf = function(units) {
-          if (this.$C && this.$C !== 'gregory') {
-            return calendarSystem.startOf(this.$y, this.$M, this.$D, units);
-          } else {
-            return originalStartOf.call(this, units);
-          }
-        };
-      }
+    if (typeof calendarSystem.startOf === "function") {
+      const originalStartOf = dayjsClass.prototype.startOf;
+      dayjsClass.prototype.startOf = function (units) {
+        if (this.$C && this.$C !== "gregory") {
+          return calendarSystem.startOf(this.$y, this.$M, this.$D, units);
+        } else {
+          return originalStartOf.call(this, units);
+        }
+      };
+    }
 
-      if (typeof calendarSystem.endOf === 'function') {
-        const originalEndOf = dayjsClass.prototype.endOf;
-        dayjsClass.prototype.endOf = function(units) {
-          if (this.$C && this.$C !== 'gregory') {
-            return calendarSystem.endOf(this.$y, this.$M, this.$D, units);
-          } else {
-            return originalEndOf.call(this, units);
-          }
-        };
-      }
+    if (typeof calendarSystem.endOf === "function") {
+      const originalEndOf = dayjsClass.prototype.endOf;
+      dayjsClass.prototype.endOf = function (units) {
+        if (this.$C && this.$C !== "gregory") {
+          return calendarSystem.endOf(this.$y, this.$M, this.$D, units);
+        } else {
+          return originalEndOf.call(this, units);
+        }
+      };
+    }
   };
 
   // Get a calendar system from the registry:
-  dayjsFactory.getRegisteredCalendarSystem = name => {
+  dayjsFactory.getRegisteredCalendarSystem = (name) => {
     if (!calendarSystems[name]) {
       throw new Error(`Calendar system '${name}' is not registered.`);
     }
@@ -97,19 +99,19 @@ export default (options, dayjsClass, dayjsFactory) => {
   };
 
   const oldInit = dayjsClass.prototype.init;
-  dayjsClass.prototype.init = function(options) {
+  dayjsClass.prototype.init = function (options) {
     oldInit.bind(this)(options);
     if (this.$C && this.$C !== "gregory") {
       this.toCalendarSystem(this.$C);
     }
   };
   // Override the default clone method to also clone the calendar system
-  dayjsClass.prototype.clone = function() {
+  dayjsClass.prototype.clone = function () {
     return wrapper(this.$d, this);
   };
 
   // Override the default startOf method to convert the date to the specified calendar system
-  dayjsClass.prototype.startOf = function(units, startOf) {
+  dayjsClass.prototype.startOf = function (units, startOf) {
     // startOf -> endOf
     const isStartOf = !Utils.u(startOf) ? startOf : true;
     const unit = Utils.p(units);
@@ -180,7 +182,7 @@ export default (options, dayjsClass, dayjsFactory) => {
 
   const old$Set = dayjsClass.prototype.$set;
   // Override the default $set method to convert the date to the specified calendar system
-  dayjsClass.prototype.$set = function(units, int) {
+  dayjsClass.prototype.$set = function (units, int) {
     if (("$C" in this && this.$C === "gregory") || !("$C" in this)) {
       return old$Set.bind(this)(units, int);
     }
@@ -217,14 +219,14 @@ export default (options, dayjsClass, dayjsFactory) => {
   };
 
   const oldAdd = dayjsClass.prototype.add;
-  dayjsClass.prototype.add = function(number, units) {
+  dayjsClass.prototype.add = function (number, units) {
     number = Number(number); // eslint-disable-line no-param-reassign
     const unit = Utils.p(units);
 
     if (("$C" in this && this.$C === "gregory") || !("$C" in this)) {
       return oldAdd.bind(this)(number, units);
     }
-    const instanceFactorySet = n => {
+    const instanceFactorySet = (n) => {
       const convertedDate = calendarSystems[this.$C].convertToGregorian(
         this.$y,
         this.$M,
@@ -262,7 +264,7 @@ export default (options, dayjsClass, dayjsFactory) => {
       {
         ["minute"]: 60 * 1e3,
         ["hour"]: 60 * 60 * 1e3,
-        ["second"]: 1e3
+        ["second"]: 1e3,
       }[unit] || 1; // ms
 
     const nextTimeStamp = this.$d.getTime() + number * step;
@@ -270,7 +272,7 @@ export default (options, dayjsClass, dayjsFactory) => {
   };
 
   const oldDate = dayjsClass.prototype.date;
-  dayjsClass.prototype.date = function(input) {
+  dayjsClass.prototype.date = function (input) {
     if ("$C" in this && this.$C !== "gregory") {
       return this.$g(input, "$D", "day");
     } else {
@@ -278,7 +280,7 @@ export default (options, dayjsClass, dayjsFactory) => {
     }
   };
 
-  dayjsFactory.toCalendarSystem = function(calendar) {
+  dayjsFactory.toCalendarSystem = function (calendar) {
     if (!calendarSystems[calendar]) {
       throw new Error(`Calendar system '${calendar}' is not registered.`);
     }
@@ -287,7 +289,7 @@ export default (options, dayjsClass, dayjsFactory) => {
   };
 
   // Convert a Day.js instance to a specific calendar system
-  dayjsClass.prototype.toCalendarSystem = function(calendar) {
+  dayjsClass.prototype.toCalendarSystem = function (calendar) {
     if (!calendarSystems[calendar]) {
       throw new Error(`Calendar system '${calendar}' is not registered.`);
     }
@@ -331,15 +333,66 @@ export default (options, dayjsClass, dayjsFactory) => {
       }
     }
     // Update the locale to reflect the new calendar system
-    dayjsFactory.locale(
-      newInstance.$L,
-      {
-        ...newInstance.$locale(),
-        ...calendarSystems[calendar].localeOverride(newInstance.$L)
-      },
-      true
-    );
+    dayjsFactory.updateLocale(newInstance.$L, calendarSystems[calendar].localeOverride(newInstance.$L));
+    // dayjsFactory.locale(
+    //   newInstance.$L,
+    //   {
+    //     ...newInstance.$locale(),
+    //     ...calendarSystems[calendar].localeOverride(newInstance.$L),
+    //   },
+    //   true
+    // );
     return newInstance;
+  };
+
+  // Handle locale inconsistencies if any:
+  function handleLocale(preset, object, calendarSystem) {
+    const buggyLocales = [
+      "ar",
+      "ar-dz",
+      "ar-iq",
+      "ar-kw",
+      "ar-ly",
+      "ar-ma",
+      "ar-sa",
+      "ar-tn",
+      "fa",
+    ];
+    // We patch some locale dictionaries that have wrongly named months:
+    // This is a costly operation, so we only do it for locales that need it.
+    if (typeof preset === "string" && buggyLocales.includes(preset)) {
+      return dayjsFactory.updateLocale(
+        preset,
+        calendarSystems[calendarSystem].localeOverride(preset)
+      );
+    }
+    return object;
+  }
+  const oldLocale = dayjsClass.prototype.locale;
+  dayjsClass.prototype.locale = function (preset, object) {
+    object = handleLocale(preset, object, this.$C || "gregory");
+    return oldLocale.bind(this)(preset, object);
+  };
+
+  const oldDayjsFactoryLocale = dayjsFactory.locale;
+  dayjsFactory.locale = function (preset, object, isLocal) {
+    object = handleLocale(preset, object, defaultCalendarSystem);
+    return oldDayjsFactoryLocale.bind(this)(preset, object, isLocal);
+  };
+
+  dayjsFactory.toCalendarSystem.setDefault = function (calendar) {
+    defaultCalendarSystem = calendar;
+  };
+
+  dayjsFactory.updateLocale = function (locale, customConfig) {
+    const localeList = dayjsFactory.Ls;
+    const localeConfig = localeList[locale];
+    if (!localeConfig) return;
+    const customConfigKeys = customConfig ? Object.keys(customConfig) : [];
+    customConfigKeys.forEach((c) => {
+      localeConfig[c] = customConfig[c];
+    });
+    return localeConfig; // eslint-disable-line consistent-return
   };
 
   // Convert a date from a specific calendar system to a Day.js instance

@@ -26,6 +26,12 @@ describe("CalendarSystemBase", () => {
     calendarSystemBase = new MockCalendarSystem();
   });
 
+  test("should throw error when calling convertToJulian", () => {
+    expect(() => calendarSystemBase.convertToJulian(new Date())).toThrow(
+      Error
+    );
+  });
+
   test("should throw error when calling convertFromGregorian", () => {
     expect(() => calendarSystemBase.convertFromGregorian(new Date())).toThrow(
       Error

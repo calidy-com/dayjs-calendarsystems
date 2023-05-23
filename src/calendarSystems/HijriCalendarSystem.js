@@ -1,7 +1,7 @@
 /**
- * Persian Calendar System
+ * Hijri Calendar System
  *
- * @file PersianCalendarSystem.js
+ * @file HijriCalendarSystem.js
  * @project dayjs-calendarsystems
  * @license see LICENSE file included in the project
  * @author Calidy.com, Amir Moradi (https://calidy.com/)
@@ -13,28 +13,24 @@ import CalendarSystemBase from "./CalendarSystemBase";
 import * as CalendarUtils from "../calendarUtils/fourmilabCalendar";
 import { generateMonthNames } from "../calendarUtils/IntlUtils";
 
-export default class PersianCalendarSystem extends CalendarSystemBase {
+export default class HijriCalendarSystem extends CalendarSystemBase {
   constructor(locale = "en") {
     super();
     this.firstDayOfWeek = 6; // Saturday
     this.locale = locale;
     this.monthNamesLocalized = generateMonthNames(
       locale,
-      "persian",
-      "Farvardin"
+      "islamic-umalqura",
+      "Muharram"
     );
-    // months: 'ژانویه_فوریه_مارس_آوریل_مه_ژوئن_ژوئیه_اوت_سپتامبر_اکتبر_نوامبر_دسامبر'.split('_'),
   }
 
   convertToJulian(calendarYear, calendarMonth, calendarDay) {
     // calendarMonth = calendarMonth+1 because the *_to_jd function month is 1-based
-    // We add 0.5 to the result to fix the julian day calculation.
-    return (
-      CalendarUtils.persiana_to_jd(
-        calendarYear,
-        calendarMonth + 1,
-        calendarDay
-      ) + 0.5
+    return CalendarUtils.islamic_to_jd(
+      calendarYear,
+      calendarMonth + 1,
+      calendarDay
     );
   }
 
@@ -77,7 +73,7 @@ export default class PersianCalendarSystem extends CalendarSystemBase {
       date.getMonth() + 1,
       date.getDate()
     );
-    const convertedDateArray = CalendarUtils.jd_to_persiana(julianDay);
+    const convertedDateArray = CalendarUtils.jd_to_islamic(julianDay);
     return {
       year: convertedDateArray[0],
       month: convertedDateArray[1] - 1, // -1 because the Persian month is 0-based
@@ -100,14 +96,9 @@ export default class PersianCalendarSystem extends CalendarSystemBase {
     };
   }
 
-  monthNames(
-    locale = "en",
-    calendar = "persian",
-    firstMonthName = "Farvardin"
-  ) {
+  monthNames(locale = "en", calendar = "islamic-umalqura", firstMonthName = "Muharram") {
     return generateMonthNames(locale, calendar, firstMonthName);
   }
-
   getLocalizedMonthName(monthIndex) {
     return this.monthNamesLocalized[monthIndex];
   }

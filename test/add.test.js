@@ -3,10 +3,12 @@ import MockDate from "mockdate";
 import calendarSystems from "../src/index";
 import GregoryCalendarSystem from "../src/calendarSystems/GregoryCalendarSystem";
 import PersianCalendarSystem from "../src/calendarSystems/PersianCalendarSystem";
+import HijriCalendarSystem from "../src/calendarSystems/HijriCalendarSystem";
 
 const testCalendarSystems = [
   "gregory",
-  "persian" /* add more calendar systems */
+  "persian",
+  "islamic",
 ];
 
 testCalendarSystems.forEach(calendarSystem => {
@@ -17,6 +19,7 @@ testCalendarSystems.forEach(calendarSystem => {
       dayjs.extend(calendarSystems);
       dayjs.registerCalendarSystem("gregory", new GregoryCalendarSystem());
       dayjs.registerCalendarSystem("persian", new PersianCalendarSystem());
+      dayjs.registerCalendarSystem("islamic", new HijriCalendarSystem());
     });
     beforeEach(() => {
       MockDate.set(new Date());

@@ -12,6 +12,7 @@ export default class GregoryCalendarSystem extends CalendarSystemBase {
 
     convertFromGregorian(date: Date | DateLikeObject | DayjsLikeObject | string | number | undefined | null): { year: number; month: number; day: number; };
     convertToGregorian(year: number, month: number, day: number): { year: number; month: number; day: number; };
-    monthNames(locale?: string): string[];
+    convertToJulian(year: number, month: number, day: number): number;
+    monthNames(locale: string, calendar: string, firstMonthName: string): string[];
     getLocalizedMonthName(monthIndex: number): string;
 }

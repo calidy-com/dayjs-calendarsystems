@@ -7,6 +7,7 @@ import timeZone from "dayjs/plugin/timezone";
 import calendarSystems from "../src/index";
 import GregoryCalendarSystem from "../src/calendarSystems/GregoryCalendarSystem";
 import PersianCalendarSystem from "../src/calendarSystems/PersianCalendarSystem";
+import HijriCalendarSystem from "../src/calendarSystems/HijriCalendarSystem";
 
 describe("CalendarSystems Plugin", () => {
   beforeAll(() => {
@@ -15,33 +16,31 @@ describe("CalendarSystems Plugin", () => {
     dayjs.extend(calendarSystems);
     dayjs.registerCalendarSystem("gregory", new GregoryCalendarSystem());
     dayjs.registerCalendarSystem("persian", new PersianCalendarSystem());
+    dayjs.registerCalendarSystem("islamic", new HijriCalendarSystem());
   });
 
   test("should register and retrieve a calendar system", () => {
     const persianCalendar = dayjs.getRegisteredCalendarSystem("persian");
     expect(persianCalendar).toBeInstanceOf(PersianCalendarSystem);
 
+    const hijriCalendar = dayjs.getRegisteredCalendarSystem("islamic");
+    expect(hijriCalendar).toBeInstanceOf(HijriCalendarSystem);
+
     const gregoryCalendar = dayjs.getRegisteredCalendarSystem("gregory");
     expect(gregoryCalendar).toBeInstanceOf(GregoryCalendarSystem);
   });
 
   test("should convert a Day.js instance to a specific calendar system", () => {
-    const when2 = dayjs("2023-05-13T23:00:00.000Z")
-      .tz("Europe/Paris")
-      .locale("fr")
-      .toCalendarSystem("persian")
-      .format("ddd YYYY-MM-DD HH:mm:ss");
-    const when3 = dayjs("2023-05-13T23:00:00.000Z")
-      .tz("Asia/Tehran")
-      .locale("fr")
-      .toCalendarSystem("persian")
-      .format("ddd YYYY-MM-DD HH:mm:ss");
-
-    const date = dayjs(new Date(2023, 4, 14)); // May 14, 2023
+    const date = dayjs(new Date(2023, 3, 14)); // April 14, 2023 (! Date month is 0-based !)
     const persianDate = date.toCalendarSystem("persian");
     expect(persianDate.$y).toEqual(1402);
-    expect(persianDate.$M).toEqual(1); // Ordibehesht (Months are 0-based)
-    expect(persianDate.$D).toEqual(24);
+    expect(persianDate.$M).toEqual(0); // Farvardin is 1st month but the indexes are 0 based so we use 0. (Months are 0-based)
+    expect(persianDate.$D).toEqual(25);
+
+    const hijriDate = date.toCalendarSystem("islamic");
+    expect(hijriDate.$y).toEqual(1444);
+    expect(hijriDate.$M).toEqual(8); // Ramadan is 9th month but the indexes are 0 based so we use 8. (Months are 0-based)
+    expect(hijriDate.$D).toEqual(23);
   });
 
   test("should throw an error for an unregistered calendar system", () => {
