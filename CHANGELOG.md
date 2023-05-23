@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.1.1...v1.1.2) (2023-05-23)
+
+
+### Bug Fixes
+
+* update  method to accepts all units ([c23b049](https://github.com/calidy-com/dayjs-calendarsystems/commit/c23b0497bd9276e1e1bebf6c79b6f661db862317))
+
 ### [1.1.1](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.1.0...v1.1.1) (2023-05-23)
 
 
