@@ -13,6 +13,19 @@ import CalendarSystemBase from "./CalendarSystemBase";
 import { generateMonthNames } from "../calendarUtils/IntlUtils";
 
 export default class GregoryCalendarSystem extends CalendarSystemBase {
+  constructor(locale = "en") {
+    super();
+    this.firstDayOfWeek = 6; // Saturday
+    this.locale = locale;
+    this.intlCalendar = "gregory";
+    this.firstMonthNameEnglish = "January";
+    this.monthNamesLocalized = generateMonthNames(
+      locale,
+      "gregory",
+      "January"
+    );
+  }
+
   convertToJulian(calendarYear, calendarMonth, calendarDay) {
     // calendarMonth = calendarMonth+1 because the *_to_jd function month is 1-based
     return CalendarUtils.gregorian_to_jd(
@@ -70,11 +83,4 @@ export default class GregoryCalendarSystem extends CalendarSystemBase {
   monthNames(locale = "en", calendar = "gregory", firstMonthName = "January") {
     return generateMonthNames(locale, calendar, firstMonthName);
   }
-  // monthNames() {
-  //   return Array.from({ length: 12 }, (_, i) =>
-  //     new Intl.DateTimeFormat("en-US", { month: "long" }).format(
-  //       new Date(1970, i)
-  //     )
-  //   );
-  // }
 }

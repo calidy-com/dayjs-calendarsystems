@@ -7,6 +7,7 @@
  * @description see README.md file included in the project
  *
  */
+import { generateMonthNames } from "../calendarUtils/IntlUtils";
 
 // Possible calendars based on the Intl API:
 // "buddhist", "chinese", "coptic", "dangi", "ethioaa", "ethiopic", "gregory", "hebrew",
@@ -18,6 +19,13 @@ export default class CalendarSystemBase {
 
   constructor(locale = "en") {
     this.locale = locale;
+    this.intlCalendar = "gregory";
+    this.firstMonthNameEnglish = "January";
+    this.monthNamesLocalized = generateMonthNames(
+      locale,
+      "gregory",
+      "January"
+    );
   }
 
   convertFromGregorian(date) {
@@ -45,10 +53,12 @@ export default class CalendarSystemBase {
     if (monthIndex < 0 || monthIndex >= monthNames.length) {
       throw new Error("Invalid month index.");
     }
+    return this.monthNamesLocalized[monthIndex];
 
-    return new Intl.DateTimeFormat(this.locale, { month: "long" }).format(
-      new Date(2022, monthIndex)
-    );
+    // generateMonthNames(this.locale, this.intlCalendar, this.firstMonthNameEnglish);
+    // return new Intl.DateTimeFormat(this.locale, { month: "long" }).format(
+    //   new Date(2022, monthIndex)
+    // );
   }
 
   localeOverride(locale) {

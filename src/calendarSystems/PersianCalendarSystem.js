@@ -18,6 +18,8 @@ export default class PersianCalendarSystem extends CalendarSystemBase {
     super();
     this.firstDayOfWeek = 6; // Saturday
     this.locale = locale;
+    this.intlCalendar = "persian";
+    this.firstMonthNameEnglish = "Farvardin";
     this.monthNamesLocalized = generateMonthNames(
       locale,
       "persian",

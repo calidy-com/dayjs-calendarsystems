@@ -18,6 +18,8 @@ export default class HijriCalendarSystem extends CalendarSystemBase {
     super();
     this.firstDayOfWeek = 6; // Saturday
     this.locale = locale;
+    this.intlCalendar = "islamic-umalqura";
+    this.firstMonthNameEnglish = "Muharram";
     this.monthNamesLocalized = generateMonthNames(
       locale,
       "islamic-umalqura",
