@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.1.3...v1.2.0) (2023-05-31)
+
+
+### Features
+
+* Huge perf improvement by caching Intl Api formatters ([7f19395](https://github.com/calidy-com/dayjs-calendarsystems/commit/7f19395fd5bf53567565a307a9e3806f4eb65647))
+
 ### [1.1.3](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.1.2...v1.1.3) (2023-05-23)
 
 
