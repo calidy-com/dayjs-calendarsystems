@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.2.0...v1.3.0) (2023-06-02)
+
+
+### Features
+
+* Added Hebrew Calendar System, hebrew tests, fix typescript issues, code cleanup, introduced new isLeapYear function (rewrites dayjs plugin to work on all calendar systems) ([fd550e1](https://github.com/calidy-com/dayjs-calendarsystems/commit/fd550e1bbf32a1b50a714ea6bf167b8f8e4c2ae1))
+
 ## [1.2.0](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.1.3...v1.2.0) (2023-05-31)
 
 
