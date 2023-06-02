@@ -102,6 +102,10 @@ export default class PersianCalendarSystem extends CalendarSystemBase {
     };
   }
 
+  isLeapYear() {
+    return CalendarUtils.leap_persiana(this.$y);
+  }
+
   monthNames(
     locale = "en",
     calendar = "persian",

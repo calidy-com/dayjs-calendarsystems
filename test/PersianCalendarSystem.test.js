@@ -24,9 +24,10 @@ describe("PersianCalendarSystem", () => {
   });
 
   test("convertToGregorian should return the correct Gregorian date", () => {
-    const date = { year: 1402, month: 2, day: 25 }; // Persian date: Ordibehesht 25, 1402
+    const date = { year: 1402, month: 1, day: 25 }; // Persian date: Ordibehesht 25, 1402 (0 based month)
+    // NOTE: jd_to_gregorian expects and returns 1-based months
     const [gy, gm, gd] = CalendarUtils.jd_to_gregorian(
-      CalendarUtils.persiana_to_jd(date.year, date.month, date.day) + 0.5
+      CalendarUtils.persiana_to_jd(date.year, date.month + 1, date.day) + 0.5
     );
     const convertedDate = persianCalendar.convertToGregorian(
       date.year,
@@ -34,7 +35,7 @@ describe("PersianCalendarSystem", () => {
       date.day
     );
     expect(convertedDate.year).toEqual(gy);
-    expect(convertedDate.month).toEqual(gm); // jd_to_gregorian return 1-based months
+    expect(convertedDate.month).toEqual(gm - 1);// -1 because the jd_to_gregorian month is 1-based
     expect(convertedDate.day).toEqual(gd);
   });
 

@@ -21,11 +21,7 @@ export default class CalendarSystemBase {
     this.locale = locale;
     this.intlCalendar = "gregory";
     this.firstMonthNameEnglish = "January";
-    this.monthNamesLocalized = generateMonthNames(
-      locale,
-      "gregory",
-      "January"
-    );
+    this.monthNamesLocalized = generateMonthNames(locale, "gregory", "January");
   }
 
   convertFromGregorian(date) {
@@ -34,14 +30,21 @@ export default class CalendarSystemBase {
     );
   }
 
+  // Expects a zero-based month index
+  // Returns a zero-based month index
   convertToGregorian(date) {
     throw new Error(
       "Method convertToGregorian must be implemented by subclass"
     );
   }
 
+  // Expects a zero-based month index
   convertToJulian(date) {
     throw new Error("Method convertToJulian must be implemented by subclass");
+  }
+
+  isLeapYear(calendarYear) {
+    throw new Error("Method isLeapYear must be implemented by subclass");
   }
 
   monthNames(locale, calendar, firstMonthName) {

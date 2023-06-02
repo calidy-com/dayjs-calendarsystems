@@ -83,6 +83,7 @@ export default class HijriCalendarSystem extends CalendarSystemBase {
     };
   }
 
+  // Returns a zero-based month index
   // Expects a zero-based month index
   convertToGregorian(calendarYear, calendarMonth, calendarDay) {
     const julianDay = this.convertToJulian(
@@ -98,7 +99,15 @@ export default class HijriCalendarSystem extends CalendarSystemBase {
     };
   }
 
-  monthNames(locale = "en", calendar = "islamic-umalqura", firstMonthName = "Muharram") {
+  isLeapYear() {
+    return CalendarUtils.leap_islamic(this.$y);
+  }
+
+  monthNames(
+    locale = "en",
+    calendar = "islamic-umalqura",
+    firstMonthName = "Muharram"
+  ) {
     return generateMonthNames(locale, calendar, firstMonthName);
   }
   getLocalizedMonthName(monthIndex) {

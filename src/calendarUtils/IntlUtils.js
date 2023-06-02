@@ -27,7 +27,7 @@ export function getLocalizedMonthName(monthIndex, locale = "en") {
 
 function getMonthNames(locale, calendar = "persian") {
   const cacheKey = `${locale}-${calendar}`;
-  
+
   if (!monthNamesCache[cacheKey]) {
     const monthNames = [];
     for (let i = 0; i < 12; i++) {

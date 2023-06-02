@@ -26,21 +26,21 @@
   ],
   "size-limit": [
     {
-      "limit": "2.99 KB",
+      "limit": "3.99 KB",
       "path": "dayjs-calendarsystems.umd.min.js",
       "ignore": [
         "dayjs"
       ]
     },
     {
-      "limit": "2.99 KB",
+      "limit": "3.99 KB",
       "path": "dayjs-calendarsystems.cjs.min.js",
       "ignore": [
         "dayjs"
       ]
     },
     {
-      "limit": "2.99 KB",
+      "limit": "3.99 KB",
       "path": "dayjs-calendarsystems.esm.min.js",
       "ignore": [
         "dayjs"

@@ -3,19 +3,27 @@ import calendarSystems from "../src/index";
 import GregoryCalendarSystem from "../src/calendarSystems/GregoryCalendarSystem";
 import PersianCalendarSystem from "../src/calendarSystems/PersianCalendarSystem";
 import HijriCalendarSystem from "../src/calendarSystems/HijriCalendarSystem";
+import HebrewCalendarSystem from "../src/calendarSystems/HebrewCalendarSystem";
 
 describe('Calendar Systems Conversion', () => {
   const targetDate = "2023-05-24";
   const targetPersianDate = "1402-03-03";
   const targetIslamicDate = "1444-11-04";
+  const targetHebrewDate = "5783-03-04";
 
   beforeAll(() => {
     dayjs.extend(calendarSystems);
     dayjs.registerCalendarSystem("gregory", new GregoryCalendarSystem());
     dayjs.registerCalendarSystem("persian", new PersianCalendarSystem());
     dayjs.registerCalendarSystem("islamic", new HijriCalendarSystem());
+    dayjs.registerCalendarSystem("hebrew", new HebrewCalendarSystem());
   });
 
+  test('Convert to Hebrew', () => {
+    const hebrewDate = dayjs(targetDate).toCalendarSystem("hebrew").format("YYYY-MM-DD");
+    expect(hebrewDate).toEqual(targetHebrewDate);
+  });
+  
   test('Convert to Persian', () => {
     const persianDate = dayjs(targetDate).toCalendarSystem("persian").format("YYYY-MM-DD");
     expect(persianDate).toEqual(targetPersianDate);
@@ -51,9 +59,19 @@ describe('Calendar Systems Conversion', () => {
     expect(gregorianToIslamic).toEqual(targetIslamicDate);
   });
 
+  test('Convert Hebrew to Gregorian', () => {
+    const hebrewToGregorian = dayjs(targetDate).toCalendarSystem("hebrew").toCalendarSystem("gregory").format("YYYY-MM-DD");
+    expect(hebrewToGregorian).toEqual(targetDate);
+  });
+  
   test('Convert Islamic to Persian', () => {
     const islamicToPersian = dayjs(targetDate).toCalendarSystem("islamic").toCalendarSystem("persian").format("YYYY-MM-DD");
     expect(islamicToPersian).toEqual(targetPersianDate);
+  });
+
+  test('Convert Hebrew to Persian', () => {
+    const hebrewToPersian = dayjs(targetDate).toCalendarSystem("hebrew").toCalendarSystem("persian").format("YYYY-MM-DD");
+    expect(hebrewToPersian).toEqual(targetPersianDate);
   });
 
   test('Convert Islamic to Gregorian', () => {

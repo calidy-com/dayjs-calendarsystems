@@ -15,6 +15,7 @@ export declare abstract class CalendarSystemBase {
     abstract monthNames(locale: string, calendar: string, firstMonthName: string): string[];
     getLocalizedMonthName(monthIndex: number): string;
     localeOverride(locale: string): Object;
+    isLeapYear?(): boolean;
     daysInMonth?(): number;
     startOf?(units: OpUnitType,isStartOf: Boolean): Dayjs;
     endOf?(units: OpUnitType): Dayjs;

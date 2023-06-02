@@ -6,6 +6,7 @@ import calendarSystems from "../src/index";
 import GregoryCalendarSystem from "../src/calendarSystems/GregoryCalendarSystem";
 import PersianCalendarSystem from "../src/calendarSystems/PersianCalendarSystem";
 import HijriCalendarSystem from "../src/calendarSystems/HijriCalendarSystem";
+import HebrewCalendarSystem from "../src/calendarSystems/HebrewCalendarSystem";
 // import "dayjs/locale/fa";
 
 describe("daysInMonth method with different calendar systems", () => {
@@ -16,6 +17,7 @@ describe("daysInMonth method with different calendar systems", () => {
     dayjs.registerCalendarSystem("gregory", new GregoryCalendarSystem());
     dayjs.registerCalendarSystem("persian", new PersianCalendarSystem());
     dayjs.registerCalendarSystem("islamic", new HijriCalendarSystem());
+    dayjs.registerCalendarSystem("hebrew", new HebrewCalendarSystem());
   });
 
   test("should return the correct number of days in a month for Gregorian calendar", () => {
@@ -27,7 +29,10 @@ describe("daysInMonth method with different calendar systems", () => {
   });
 
   test("should return the correct number of days in a month for Persian calendar", () => {
-    const dateInFarvardin = dayjs("2023-03-24").utc().tz("Europe/Paris").toCalendarSystem("persian");
+    const dateInFarvardin = dayjs("2023-03-24")
+      .utc()
+      .tz("Europe/Paris")
+      .toCalendarSystem("persian");
     const daysInFarvardin = dateInFarvardin.daysInMonth();
     expect(daysInFarvardin).toBe(31);
 
@@ -63,30 +68,44 @@ describe("daysInMonth method with different calendar systems", () => {
     const daysInAzar = dateInAzar.daysInMonth();
     expect(daysInAzar).toBe(30);
 
-    const dateInDey = dayjs("2023-12-28").tz("Europe/Paris").utc().toCalendarSystem("persian");
+    const dateInDey = dayjs("2023-12-28")
+      .tz("Europe/Paris")
+      .utc()
+      .toCalendarSystem("persian");
     const daysInDey = dateInDey.daysInMonth();
     expect(daysInDey).toBe(30);
 
-    const dateInBahman = dayjs("2024-01-23").utc().tz("Europe/Paris").toCalendarSystem("persian");
+    const dateInBahman = dayjs("2024-01-23")
+      .utc()
+      .tz("Europe/Paris")
+      .toCalendarSystem("persian");
     const daysInBahman = dateInBahman.daysInMonth();
     expect(daysInBahman).toBe(30);
-    
-    const dateInEsfandNonLeap = dayjs("2024-03-05").tz("Europe/Paris").toCalendarSystem("persian");
+
+    const dateInEsfandNonLeap = dayjs("2024-03-05")
+      .tz("Europe/Paris")
+      .toCalendarSystem("persian");
     const daysInEsfandNonLeap = dateInEsfandNonLeap.daysInMonth();
     expect(daysInEsfandNonLeap).toBe(29); // Esfand in a non leap(normal) year has 29 days
 
-    const dateInEsfand4yrLeap = dayjs("2025-03-05").tz("Europe/Paris").toCalendarSystem("persian");
+    const dateInEsfand4yrLeap = dayjs("2025-03-05")
+      .tz("Europe/Paris")
+      .toCalendarSystem("persian");
     const daysInEsfand4yrLeap = dateInEsfand4yrLeap.daysInMonth();
     expect(daysInEsfand4yrLeap).toBe(30); // Esfand in a 4-year leap year has 30 days
 
-    const dateInEsfand5yrLeap = dayjs("2030-03-05").tz("Europe/Paris").toCalendarSystem("persian");
+    const dateInEsfand5yrLeap = dayjs("2030-03-05")
+      .tz("Europe/Paris")
+      .toCalendarSystem("persian");
     const daysInEsfand5yrLeap = dateInEsfand5yrLeap.daysInMonth();
     expect(daysInEsfand5yrLeap).toBe(30); // Esfand in a 5-year leap year has 30 days
   });
 
-
   test("should return the correct number of days in a month for Hijri calendar", () => {
-    const dateInMuharram = dayjs("2021-09-05").utc().tz("Europe/Paris").toCalendarSystem("islamic");
+    const dateInMuharram = dayjs("2021-09-05")
+      .utc()
+      .tz("Europe/Paris")
+      .toCalendarSystem("islamic");
     const daysInMuharram = dateInMuharram.daysInMonth();
     expect(daysInMuharram).toBe(30);
 
@@ -133,10 +152,73 @@ describe("daysInMonth method with different calendar systems", () => {
     const dateInDhulHijjah = dayjs("2022-07-20").toCalendarSystem("islamic");
     const daysInDhulHijjah = dateInDhulHijjah.daysInMonth();
     expect(daysInDhulHijjah).toBe(29); // non leap year
-    
-    const dateInDhulHijjahLeap = dayjs("2021-08-01").toCalendarSystem("islamic");
+
+    const dateInDhulHijjahLeap =
+      dayjs("2021-08-01").toCalendarSystem("islamic");
     const daysInDhulHijjahLeap = dateInDhulHijjahLeap.daysInMonth();
     expect(daysInDhulHijjahLeap).toBe(30); // leap year
+  });
 
-});
+  test("should return the correct number of days in a month for Hebrew calendar", () => {
+    const dateInTishrei = dayjs("2022-10-25").toCalendarSystem("hebrew");
+    const daysInTishrei = dateInTishrei.daysInMonth();
+    expect(daysInTishrei).toBe(30);
+
+    const dateInCheshvan = dayjs("2022-11-24").toCalendarSystem("hebrew");
+    const daysInCheshvan = dateInCheshvan.daysInMonth();
+    // Cheshvan can have either 29 or 30 days
+    expect([29, 30]).toContain(daysInCheshvan);
+
+    const dateInKislev = dayjs("2022-12-24").toCalendarSystem("hebrew");
+    const daysInKislev = dateInKislev.daysInMonth();
+    // Kislev can have either 29 or 30 days
+    expect([29, 30]).toContain(daysInKislev);
+
+    const dateInTevet = dayjs("2023-01-22").toCalendarSystem("hebrew");
+    const daysInTevet = dateInTevet.daysInMonth();
+    expect(daysInTevet).toBe(29);
+
+    const dateInShevat = dayjs("2023-02-21").toCalendarSystem("hebrew");
+    const daysInShevat = dateInShevat.daysInMonth();
+    expect(daysInShevat).toBe(30);
+
+
+    const dateInAdar = dayjs("2023-03-22").toCalendarSystem("hebrew");
+    const daysInAdar = dateInAdar.daysInMonth();
+    expect(daysInAdar).toBe(29);
+
+    const dateInAdarI = dayjs("2022-03-03").toCalendarSystem("hebrew");
+    const daysInAdarI = dateInAdarI.daysInMonth();
+    // In leap years it has 30 days, otherwise it doesn't exist
+    expect(daysInAdarI).toBe(30);
+
+    const dateInAdarII = dayjs("2022-04-01").toCalendarSystem("hebrew");
+    const daysInAdarII = dateInAdarII.daysInMonth();
+    // In leap years it's called Adar II (Veadar) and has 29 days, otherwise it's called Adar
+    expect(daysInAdarII).toBe(29);
+
+    const dateInNisan = dayjs("2023-03-23").toCalendarSystem("hebrew");
+    const daysInNisan = dateInNisan.daysInMonth();
+    expect(daysInNisan).toBe(30);
+
+    const dateInIyar = dayjs("2023-04-22").toCalendarSystem("hebrew");
+    const daysInIyar = dateInIyar.daysInMonth();
+    expect(daysInIyar).toBe(29);
+
+    const dateInSivan = dayjs("2023-05-21").toCalendarSystem("hebrew");
+    const daysInSivan = dateInSivan.daysInMonth();
+    expect(daysInSivan).toBe(30);
+
+    const dateInTammuz = dayjs("2023-07-18").toCalendarSystem("hebrew");
+    const daysInTammuz = dateInTammuz.daysInMonth();
+    expect(daysInTammuz).toBe(29);
+
+    const dateInAv = dayjs("2023-08-17").toCalendarSystem("hebrew");
+    const daysInAv = dateInAv.daysInMonth();
+    expect(daysInAv).toBe(30);
+
+    const dateInElul = dayjs("2022-09-25").toCalendarSystem("hebrew");
+    const daysInElul = dateInElul.daysInMonth();
+    expect(daysInElul).toBe(29);
+  });
 });

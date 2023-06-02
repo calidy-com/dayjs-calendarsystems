@@ -24,9 +24,10 @@ describe("HijriCalendarSystem", () => {
   });
 
   test("convertToGregorian should return the correct Gregorian date", () => {
-    const date = { year: 1444, month: 9, day: 21 }; // Hijri date: Ramadan 21, 1444
+    const date = { year: 1444, month: 8, day: 21 }; // Hijri date: Ramadan 21, 1444 (0 based month)
+    // NOTE: jd_to_gregorian expects and returns 1-based months
     const [gy, gm, gd] = CalendarUtils.jd_to_gregorian(
-      CalendarUtils.islamic_to_jd(date.year, date.month, date.day)
+      CalendarUtils.islamic_to_jd(date.year, date.month + 1, date.day)
     );
     const convertedDate = hijriCalendar.convertToGregorian(
       date.year,
@@ -34,7 +35,7 @@ describe("HijriCalendarSystem", () => {
       date.day
     );
     expect(convertedDate.year).toEqual(gy);
-    expect(convertedDate.month).toEqual(gm); // jd_to_gregorian return 1-based months
+    expect(convertedDate.month).toEqual(gm - 1); // -1 because the jd_to_gregorian month is 1-based
     expect(convertedDate.day).toEqual(gd);
   });
 

@@ -88,6 +88,17 @@ export default (options, dayjsClass, dayjsFactory) => {
         }
       };
     }
+
+    if (typeof calendarSystem.isLeapYear === "function") {
+      const originalIsLeapYear = dayjsClass.prototype.isLeapYear;
+      dayjsClass.prototype.isLeapYear = function () {
+        if (this.$C && this.$C !== "gregory") {
+          return calendarSystem.isLeapYear.call(this);
+        } else {
+          return originalIsLeapYear.call(this);
+        }
+      };
+    }
   };
 
   // Get a calendar system from the registry:
@@ -154,12 +165,20 @@ export default (options, dayjsClass, dayjsFactory) => {
           ? instanceFactory(1, 0)
           : instanceFactory(0, 0, this.$y + 1);
       case "month":
+        var monthsInYear = 12;
+        if (this.$C == "hebrew") {
+          if (this.isLeapYear()) {
+            monthsInYear = 13;
+          } else {
+            monthsInYear = 12;
+          }
+        }
         return isStartOf
           ? instanceFactory(1, this.$M)
           : instanceFactory(
               0,
-              (this.$M + 1) % 12,
-              this.$y + parseInt((this.$M + 1) / 12, 10)
+              (this.$M + 1) % monthsInYear,
+              this.$y + parseInt((this.$M + 1) / monthsInYear, 10)
             );
       case "week": {
         const weekStart = this.$locale().weekStart || 0;
@@ -265,11 +284,20 @@ export default (options, dayjsClass, dayjsFactory) => {
     };
     if (unit === "month") {
       const n = this.$M + number;
-      const y = n < 0 ? -Math.ceil(-n / 12) : parseInt(n / 12, 10);
+      var monthsInYear = 12;
+      if (this.$C == "hebrew") {
+        if (this.isLeapYear()) {
+          monthsInYear = 13;
+        } else {
+          monthsInYear = 12;
+        }
+      }
+      const y =
+        n < 0 ? -Math.ceil(-n / monthsInYear) : parseInt(n / monthsInYear, 10);
       const d = this.$D;
       const x = this.set("day", 1)
         .add(y, "year")
-        .set("month", n - y * 12);
+        .set("month", n - y * monthsInYear);
       return x.set("day", Math.min(x.daysInMonth(), d));
       //return this.set("month", this.$M + number);
     }
@@ -324,11 +352,9 @@ export default (options, dayjsClass, dayjsFactory) => {
     if (newInstance.$C !== calendar) {
       // if target calendar is gregorian, convert to gregorian, otherwise convert to calendar
       if (calendar === "gregory") {
-        const convertedDate = calendarSystems[newInstance.$C || "gregory"].convertToGregorian(
-          newInstance.$y,
-          newInstance.$M,
-          newInstance.$D
-        );
+        const convertedDate = calendarSystems[
+          newInstance.$C || "gregory"
+        ].convertToGregorian(newInstance.$y, newInstance.$M, newInstance.$D);
         newInstance.$G_y = convertedDate.year;
         newInstance.$G_M = convertedDate.month;
         newInstance.$G_D = convertedDate.day;
@@ -384,6 +410,7 @@ export default (options, dayjsClass, dayjsFactory) => {
       "ar-sa",
       "ar-tn",
       "fa",
+      "he",
     ];
     // We patch some locale dictionaries that have wrongly named months:
     // This is a costly operation, so we only do it for locales that need it.

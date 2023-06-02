@@ -4,11 +4,13 @@ import calendarSystems from "../src/index";
 import GregoryCalendarSystem from "../src/calendarSystems/GregoryCalendarSystem";
 import PersianCalendarSystem from "../src/calendarSystems/PersianCalendarSystem";
 import HijriCalendarSystem from "../src/calendarSystems/HijriCalendarSystem";
+import HebrewCalendarSystem from "../src/calendarSystems/HebrewCalendarSystem";
 
 const testCalendarSystems = [
   "gregory",
   "persian",
   "islamic",
+  "hebrew",
 ];
 
 testCalendarSystems.forEach(calendarSystem => {
@@ -20,9 +22,10 @@ testCalendarSystems.forEach(calendarSystem => {
       dayjs.registerCalendarSystem("gregory", new GregoryCalendarSystem());
       dayjs.registerCalendarSystem("persian", new PersianCalendarSystem());
       dayjs.registerCalendarSystem("islamic", new HijriCalendarSystem());
+      dayjs.registerCalendarSystem("hebrew", new HebrewCalendarSystem());
     });
     beforeEach(() => {
-      MockDate.set(new Date());
+      MockDate.set(new Date("2021-06-02"));
       // Set calendar system
       testDayjs = dayjs().toCalendarSystem(calendarSystem);
     });

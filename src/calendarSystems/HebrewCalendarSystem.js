@@ -1,7 +1,7 @@
 /**
- * Gregorian Calendar System
+ * Hebrew Calendar System
  *
- * @file GregoryCalendarSystem.js
+ * @file HebrewCalendarSystem.js
  * @project dayjs-calendarsystems
  * @license see LICENSE file included in the project
  * @author Calidy.com, Amir Moradi (https://calidy.com/)
@@ -10,21 +10,23 @@
  */
 
 import CalendarSystemBase from "./CalendarSystemBase";
+import * as CalendarUtils from "../calendarUtils/fourmilabCalendar";
 import { generateMonthNames } from "../calendarUtils/IntlUtils";
 
-export default class GregoryCalendarSystem extends CalendarSystemBase {
+export default class HebrewCalendarSystem extends CalendarSystemBase {
   constructor(locale = "en") {
     super();
-    this.firstDayOfWeek = 6; // Saturday
+    this.firstDayOfWeek = 0; // Saturday
     this.locale = locale;
-    this.intlCalendar = "gregory";
-    this.firstMonthNameEnglish = "January";
-    this.monthNamesLocalized = generateMonthNames(locale, "gregory", "January");
+    this.intlCalendar = "hebrew";
+    this.firstMonthNameEnglish = "Nisan";
+    this.monthNamesLocalized = generateMonthNames(locale, "hebrew", "Nisan");
   }
 
+  // Expects a zero-based month index
   convertToJulian(calendarYear, calendarMonth, calendarDay) {
     // calendarMonth = calendarMonth+1 because the *_to_jd function month is 1-based
-    return CalendarUtils.gregorian_to_jd(
+    return CalendarUtils.hebrew_to_jd(
       calendarYear,
       calendarMonth + 1,
       calendarDay
@@ -65,22 +67,43 @@ export default class GregoryCalendarSystem extends CalendarSystemBase {
       throw new Error("Invalid date");
     }
 
-    return date;
+    const julianDay = CalendarUtils.gregorian_to_jd(
+      date.getFullYear(),
+      date.getMonth() + 1,
+      date.getDate()
+    );
+    const convertedDateArray = CalendarUtils.jd_to_hebrew(julianDay);
+    return {
+      year: convertedDateArray[0],
+      month: convertedDateArray[1] - 1, // -1 because the Persian month is 0-based
+      day: convertedDateArray[2],
+    };
   }
 
-  convertToGregorian(year, month, day) {
+  // Expects a zero-based month index
+  // Returns a zero-based month index
+  convertToGregorian(calendarYear, calendarMonth, calendarDay) {
+    const julianDay = this.convertToJulian(
+      calendarYear,
+      calendarMonth,
+      calendarDay
+    );
+    const gregorianDateArray = CalendarUtils.jd_to_gregorian(julianDay);
     return {
-      year: year,
-      month: month,
-      day: day,
+      year: gregorianDateArray[0],
+      month: gregorianDateArray[1] - 1, // -1 because the Gregorian month is 0-based
+      day: gregorianDateArray[2],
     };
   }
 
   isLeapYear() {
-    return year % 4 == 0 && !(year % 100 == 0 && year % 400 != 0);
+    return CalendarUtils.hebrew_leap(this.$y);
   }
 
-  monthNames(locale = "en", calendar = "gregory", firstMonthName = "January") {
+  monthNames(locale = "en", calendar = "hebrew", firstMonthName = "Nisan") {
     return generateMonthNames(locale, calendar, firstMonthName);
+  }
+  getLocalizedMonthName(monthIndex) {
+    return this.monthNamesLocalized[monthIndex];
   }
 }

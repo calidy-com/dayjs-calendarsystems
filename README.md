@@ -14,11 +14,15 @@
 ---
 
 
-Day.js Calendar Systems Plugin extends Day.js library to allow the use of different calendar systems. 
+Day.js Calendar Systems Plugin extends Day.js library to allow the use of different non-gregorian calendar systems like:
+* Persian (a.k.a.: Jalaali, Shamsi, Khorshidi),
+* Arabic (a.k.a: Hijri, Islamic, Umalqura, Ghamari),
+* Hebrew (a.k.a: Jewish),
+* and more to come (PRs are welcome).
 
-Dayjs initially supports only the Gregorian calendar, making it uncompatible for more than 200 milion users worldwide.
+With this plugin, Day.js will be available to more than 200 million additional users worldwide (Estimated number of non-gregorian calendar users).
 
-With the `@calidy/dayjs-calendarsystems` plugin, we bring the capacity to run and use all non-gregorian calendar systems (like persian, islamic, hebrew, ethiopian, indian,... ) to Dayjs.
+With the `@calidy/dayjs-calendarsystems` plugin, we bring the capacity to run and use all non-gregorian calendar systems to Dayjs.
 
 
 ---
@@ -32,11 +36,14 @@ With the `@calidy/dayjs-calendarsystems` plugin, we bring the capacity to run an
 - No need for hacks, use dayjs apis in the standard way.
 - Small and light plugin, no overhead.
 - Convert between different calendar systems.
-- Default Gregorian calendar system included.
-- Persian Calendar system available.
-- Islamic (Hijri, Umalqura) Calendar system. Note: we will use the default "islamic-umalqura" calendar system for "islamic" calendar system.
-- **[WIP]** Hebrew (Jewish) Calendar system.
-- **[WIP]** Ethiopian Calendar system.
+- 🌍 🗓️ 📅 Default Gregorian calendar system included.
+- 🌍 🗓️ 🇮🇷 Persian Calendar system available.
+- 🌍 🗓️ 🇸🇦 Islamic (Hijri, Umalqura) Calendar system. Note: we will use the default "islamic-umalqura" calendar system for "islamic" calendar system.
+- 🌍 🗓️ 🇮🇱 Hebrew (Jewish) Calendar system.
+- 🌍 🗓️ 🇪🇹 **[WIP]** Ethiopian Calendar system.
+- 🌍 🗓️ 🇮🇳 **[TODO]** Indian Calendar system.
+- 🌍 🗓️ 🇨🇳 **[TODO]** Chinese Calendar system.
+- 🌍 ✅ Fixes translations of month names in Dayjs for non-gregorian and gregorian calendar systems (This is based on my knowledge, please PR to add more fixes).
 - **[TODO]** Parse date strings from different calendar systems
 - **[TODO]** Add more tests for all Dayjs Plugins
 

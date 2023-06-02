@@ -908,7 +908,7 @@ function hebrew_year_months(year)
 
 function hebrew_delay_1(year)
 {
-    var months, days, parts;
+    var months, day, parts;
 
     months = Math.floor(((235 * year) - 234) / 19);
     parts = 12084 + (13753 * months);
@@ -2197,9 +2197,9 @@ export {
     gregorian_to_jd,
     // hebrew_delay_1,
     // hebrew_delay_2,
-    // hebrew_leap,
+    hebrew_leap,
     // hebrew_month_days,
-    // hebrew_to_jd,
+    hebrew_to_jd,
     // hebrew_year_days,
     // hebrew_year_months,
     // indian_civil_to_jd,
@@ -2208,7 +2208,7 @@ export {
     // iso_to_julian,
     // jd_to_french_revolutionary,
     jd_to_gregorian,
-    // jd_to_hebrew,
+    jd_to_hebrew,
     // jd_to_indian_civil,
     jd_to_islamic,
     // jd_to_iso,
@@ -2220,11 +2220,11 @@ export {
     // jd_to_persian,
     jd_to_persiana,
     // julian_to_jd,
-    // leap_gregorian,
-    // leap_islamic,
+    leap_gregorian,
+    leap_islamic,
     // leap_julian,
     // leap_persian,
-    // leap_persiana,
+    leap_persiana,
     // mayan_count_to_jd,
     // n_weeks,
     // nearest_weekday,
