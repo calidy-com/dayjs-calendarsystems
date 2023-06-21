@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.3.0...v1.4.0) (2023-06-21)
+
+
+### Features
+
+* code optimization, cleanup and more functions. Added a WIP for Ethiopian calendar, still not stable. Fixed timezone and utc calculations ([731d5c5](https://github.com/calidy-com/dayjs-calendarsystems/commit/731d5c59601de994287f2022f272f32d86636e9c))
+
 ## [1.3.0](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.2.0...v1.3.0) (2023-06-02)
 
 
