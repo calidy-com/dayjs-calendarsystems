@@ -1,7 +1,7 @@
 /**
- * Persian Calendar System
+ * Ethiopian Calendar System
  *
- * @file PersianCalendarSystem.js
+ * @file EthiopianCalendarSystem.js
  * @project dayjs-calendarsystems
  * @license see LICENSE file included in the project
  * @author Calidy.com, Amir Moradi (https://calidy.com/)
@@ -13,19 +13,35 @@ import CalendarSystemBase from "./CalendarSystemBase";
 import * as CalendarUtils from "../calendarUtils/fourmilabCalendar";
 import { generateMonthNames } from "../calendarUtils/IntlUtils";
 
-export default class PersianCalendarSystem extends CalendarSystemBase {
+export default class EthiopianCalendarSystem extends CalendarSystemBase {
   constructor(locale = "en") {
     super();
-    this.firstDayOfWeek = 6; // Saturday
+    this.firstDayOfWeek = 0; // Sunday
     this.locale = locale;
-    this.intlCalendar = "persian";
-    this.firstMonthNameEnglish = "Farvardin";
+    // Julian date of start of Ethiopian epoch: 27 August 8 CE (Gregorian).
+    this.julianDayEpoch = 1724220.5;
+    this.intlCalendar = "ethiopic";
+    this.firstMonthNameEnglish = "Meskerem";
     this.monthNamesLocalized = generateMonthNames(
       locale,
-      "persian",
-      "Farvardin"
+      "ethiopic",
+      "Meskerem"
     );
-    // months: 'ژانویه_فوریه_مارس_آوریل_مه_ژوئن_ژوئیه_اوت_سپتامبر_اکتبر_نوامبر_دسامبر'.split('_'),
+  }
+
+  convertFromJulian(julianDayNumber) {
+     // Calculate the number of days since the Ethiopian epoch
+     const days = Math.floor(julianDayNumber) + 0.5 - this.julianDayEpoch;
+     // Calculate the Ethiopian year
+     const year = Math.floor((days - Math.floor((days + 366) / 1461)) / 365) + 1;
+     // Calculate the day of the year (1-366)
+     const dayOfYear = days - (year - 1) * 365 - Math.floor((year - 1) / 4);
+     // Calculate the Ethiopian month (1-13)
+     const month = dayOfYear > 330 ? 13 : Math.floor((dayOfYear - 1) / 30) + 1;
+     // Calculate the day of the month (1-30 for months 1-12, 1-5 or 1-6 for month 13)
+     const day = Math.floor(dayOfYear - (month - 1) * 30) + 1;
+     // Return the Ethiopian date
+     return [year, month, day];
   }
 
   // Expects a zero-based month index
@@ -41,17 +57,19 @@ export default class PersianCalendarSystem extends CalendarSystemBase {
     minute = 0,
     second = 0
   ) {
-    // calendarMonth = calendarMonth+1 because the *_to_jd function month is 1-based
-    return (
-      CalendarUtils.persiana_to_jd(
-        calendarYear,
-        calendarMonth + 1,
-        calendarDay
-      ) +
-      // We adjust the time to midnight. (noon -> midnight , diff 0.5)
-      0.5 +
-      Math.floor(second + 60 * (minute + 60 * hour) + 0.5) / 86400.0
-    );
+    // Calculate the Julian Day number for the start of this Ethiopian year
+    const yearStart =
+      (calendarYear - 1) * 365 +
+      Math.floor(calendarYear / 4) +
+      this.julianDayEpoch;
+    // Calculate the Julian Day number for the start of this Ethiopian month
+    const monthStart = yearStart + calendarMonth * 30;
+    // Calculate the Julian Day number for this Ethiopian day
+    const dayStart = monthStart + calendarDay - 1;
+    // Adjust for the time of day
+    const time = (second + 60 * (minute + 60 * hour)) / 86400.0;
+    // Return the total Julian Day number
+    return dayStart + time;
   }
 
   convertFromGregorian(date) {
@@ -70,10 +88,10 @@ export default class PersianCalendarSystem extends CalendarSystemBase {
       ) /
         86400.0 -
       0.5;
-    const convertedDateArray = CalendarUtils.jd_to_persiana(julianDay);
+    const convertedDateArray = this.convertFromJulian(julianDay);
     return {
       year: convertedDateArray[0],
-      month: convertedDateArray[1] - 1, // -1 because the Persian month is 0-based
+      month: convertedDateArray[1] - 1, // -1 because the month is 0-based
       day: convertedDateArray[2],
     };
   }
@@ -98,7 +116,7 @@ export default class PersianCalendarSystem extends CalendarSystemBase {
       second,
       millisecond
     );
-    const gregorianDateArray = CalendarUtils.jd_to_gregorian(julianDay);
+    const gregorianDateArray = CalendarUtils.jd_to_gregorian(julianDay - 0.5);
     return {
       year: gregorianDateArray[0],
       month: gregorianDateArray[1] - 1, // -1 because the Gregorian month is 0-based
@@ -107,17 +125,17 @@ export default class PersianCalendarSystem extends CalendarSystemBase {
   }
 
   isLeapYear() {
-    return CalendarUtils.leap_persiana(this.$y);
+    this.$y = this.$y + (this.$y < 0 ? 1 : 0); // No year zero
+    return this.$y % 4 === 3 || this.$y % 4 === -1;
   }
 
   monthNames(
     locale = "en",
-    calendar = "persian",
-    firstMonthName = "Farvardin"
+    calendar = "ethiopic",
+    firstMonthName = "Meskerem"
   ) {
     return generateMonthNames(locale, calendar, firstMonthName);
   }
-
   getLocalizedMonthName(monthIndex) {
     return this.monthNamesLocalized[monthIndex];
   }

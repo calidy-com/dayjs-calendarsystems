@@ -19,31 +19,37 @@ export default (options, dayjsClass, dayjsFactory) => {
 
   const wrapper = function (date, instance) {
     // Get all the properties and their values from the instance:
-    const properties = Object.keys(instance).reduce((props, key) => {
-      if (key === "$L") {
-        props["locale"] = instance[key];
-      } else if (key === "$u") {
-        props["utc"] = instance[key];
-      } else if (key === "$offset") {
-        // nothing here as it causes issues with the UTC and Timezone plugins
-      } else if (instance[key] !== instance) {
-        props[key] = instance[key];
-      }
-      return props;
-    }, {});
+    let properties = {};
+    if (instance) {
+      properties = Object.keys(instance).reduce((props, key) => {
+        if (key === "$L" || key === "locale") {
+          props["locale"] = instance[key];
+        } else if (key === "$u" || key === "utc") {
+          props["utc"] = instance[key];
+        } else if (key === "$offset") {
+          // nothing here as it causes issues with the UTC and Timezone plugins
+          props["$offset"] = instance[key];
+        } else if (key === "$x") {
+          props["x"] = instance[key];
+        } else if (key === "$d") {
+          // nothing here as it causes issues with the UTC and Timezone plugins
+        } else if (instance[key] !== instance) {
+          //props[key] = instance[key];
+        }
+        return props;
+      }, {});
+    }
+
     // Create a new instance of the class with the given date:
     const newInstance = dayjsFactory(date, properties);
     // Add the $x property (used for timezone) to the new instance:
-    if ("$x" in instance) {
-      newInstance.$x = instance.$x;
-    }
-    // Add the $u property (used for UTC) to the new instance:
-    if ("$u" in instance && newInstance.$u !== instance.$u) {
-      newInstance.$u = instance.$u;
-    }
-    if ("$C" in instance && instance.$C !== "gregory") {
+    // if ("$x" in instance) {
+    //   newInstance.$x = instance.$x;
+    // }
+    if (instance && "$C" in instance && instance.$C !== "gregory") {
       // If the calendar system is set, convert the date to the specified calendar system
-      return newInstance.toCalendarSystem(instance.$C);
+      const convertedNewInstance = newInstance.toCalendarSystem(instance.$C);
+      return convertedNewInstance;
     }
     return newInstance;
   };
@@ -126,18 +132,22 @@ export default (options, dayjsClass, dayjsFactory) => {
     // startOf -> endOf
     const isStartOf = !Utils.u(startOf) ? startOf : true;
     const unit = Utils.p(units);
+    // /!\ NB: This function expects a 1-indexed month, whereas the internal date representation is 0-indexed
     const instanceFactory = (d, m, y = this.$y) => {
       // if calendar system is not gregorian, convert the date to gregorian
       if ("$C" in this && this.$C !== "gregory") {
-        const convertedDate = calendarSystems[this.$C].convertToGregorian(
-          y,
-          m,
-          d
-        );
-        y = convertedDate.year;
-        m = convertedDate.month;
-        d = convertedDate.day;
+        // *.convertToGregorian expects and returns a 0-indexed month
+        let convertedDate;
+        try {
+          convertedDate = calendarSystems[this.$C].convertToGregorian(y, m, d);
+          y = convertedDate.year;
+          m = convertedDate.month;
+          d = convertedDate.day;
+        } catch (e) {
+          console.log("Error calling convertToGregorian", e);
+        }
       }
+
       const ins = wrapper(
         this.$u ? Date.UTC(y, m, d) : new Date(y, m, d),
         this
@@ -148,31 +158,39 @@ export default (options, dayjsClass, dayjsFactory) => {
     const instanceFactorySet = (method, slice) => {
       const argumentStart = [0, 0, 0, 0];
       const argumentEnd = [23, 59, 59, 999];
-      return wrapper(
+      const ins = wrapper(
         this.toDate()[method].apply(
           // eslint-disable-line prefer-spread
-          this.toDate("s"),
+          this.$C && this.$C !== "gregory" ? this.$d : this.toDate("s"),
           (isStartOf ? argumentStart : argumentEnd).slice(slice)
         ),
         this
       );
+      return ins;
     };
     const { $W, $M, $D } = this;
     const utcPad = `set${this.$u ? "UTC" : ""}`;
+    var monthsInYear = 12;
+    if (this.$C == "hebrew") {
+      if (this.isLeapYear()) {
+        monthsInYear = 13;
+      } else {
+        monthsInYear = 12;
+      }
+    }
+    if (this.$C == "ethiopic"){
+      monthsInYear = 13;
+    }
     switch (unit) {
       case "year":
         return isStartOf
           ? instanceFactory(1, 0)
-          : instanceFactory(0, 0, this.$y + 1);
+          : instanceFactory(
+              0,
+              0,
+              this.$y + 1
+            );
       case "month":
-        var monthsInYear = 12;
-        if (this.$C == "hebrew") {
-          if (this.isLeapYear()) {
-            monthsInYear = 13;
-          } else {
-            monthsInYear = 12;
-          }
-        }
         return isStartOf
           ? instanceFactory(1, this.$M)
           : instanceFactory(
@@ -222,7 +240,11 @@ export default (options, dayjsClass, dayjsFactory) => {
       const { year, month, day } = calendarSystems[$C].convertToGregorian(
         y,
         M,
-        d
+        d,
+        h,
+        m,
+        s,
+        ms
       );
 
       setFn("FullYear", year);
@@ -271,7 +293,11 @@ export default (options, dayjsClass, dayjsFactory) => {
       const convertedDate = calendarSystems[this.$C].convertToGregorian(
         this.$y,
         this.$M,
-        this.$D
+        this.$D,
+        this.$H,
+        this.$m,
+        this.$s,
+        this.$ms
       );
       const d = dayjsFactory(
         convertedDate.year +
@@ -282,16 +308,19 @@ export default (options, dayjsClass, dayjsFactory) => {
       );
       return wrapper(d.date(d.date() + Math.round(n * number)), this);
     };
+    var monthsInYear = 12;
+    if (this.$C == "hebrew") {
+      if (this.isLeapYear()) {
+        monthsInYear = 13;
+      } else {
+        monthsInYear = 12;
+      }
+    }
+    if (this.$C == "ethiopic"){
+      monthsInYear = 13;
+    }
     if (unit === "month") {
       const n = this.$M + number;
-      var monthsInYear = 12;
-      if (this.$C == "hebrew") {
-        if (this.isLeapYear()) {
-          monthsInYear = 13;
-        } else {
-          monthsInYear = 12;
-        }
-      }
       const y =
         n < 0 ? -Math.ceil(-n / monthsInYear) : parseInt(n / monthsInYear, 10);
       const d = this.$D;
@@ -354,7 +383,15 @@ export default (options, dayjsClass, dayjsFactory) => {
       if (calendar === "gregory") {
         const convertedDate = calendarSystems[
           newInstance.$C || "gregory"
-        ].convertToGregorian(newInstance.$y, newInstance.$M, newInstance.$D);
+        ].convertToGregorian(
+          newInstance.$y,
+          newInstance.$M,
+          newInstance.$D,
+          newInstance.$H,
+          newInstance.$m,
+          newInstance.$s,
+          newInstance.$ms
+        );
         newInstance.$G_y = convertedDate.year;
         newInstance.$G_M = convertedDate.month;
         newInstance.$G_D = convertedDate.day;
@@ -450,14 +487,27 @@ export default (options, dayjsClass, dayjsFactory) => {
   };
 
   // Convert a date from a specific calendar system to a Day.js instance
-  dayjsFactory.fromCalendarSystem = (name, year, month, day) => {
+  dayjsFactory.fromCalendarSystem = (
+    name,
+    year,
+    month,
+    day,
+    hour = 0,
+    minute = 0,
+    second = 0,
+    millisecond = 0
+  ) => {
     if (!calendarSystems[name]) {
       throw new Error(`Calendar system '${name}' is not registered.`);
     }
     const convertedDate = calendarSystems[name].convertToGregorian(
       year,
       month,
-      day
+      day,
+      hour,
+      minute,
+      second,
+      millisecond
     );
     return dayjsFactory(
       convertedDate.year + "-" + convertedDate.month + "-" + convertedDate.day

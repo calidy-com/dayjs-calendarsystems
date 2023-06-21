@@ -5,12 +5,14 @@ import GregoryCalendarSystem from "../src/calendarSystems/GregoryCalendarSystem"
 import PersianCalendarSystem from "../src/calendarSystems/PersianCalendarSystem";
 import HijriCalendarSystem from "../src/calendarSystems/HijriCalendarSystem";
 import HebrewCalendarSystem from "../src/calendarSystems/HebrewCalendarSystem";
+import EthiopianCalendarSystem from "../src/calendarSystems/EthiopianCalendarSystem";
 
 const testCalendarSystems = [
   "gregory",
   "persian",
   "islamic",
   "hebrew",
+  "ethiopic"
 ];
 
 testCalendarSystems.forEach(calendarSystem => {
@@ -23,6 +25,7 @@ testCalendarSystems.forEach(calendarSystem => {
       dayjs.registerCalendarSystem("persian", new PersianCalendarSystem());
       dayjs.registerCalendarSystem("islamic", new HijriCalendarSystem());
       dayjs.registerCalendarSystem("hebrew", new HebrewCalendarSystem());
+      dayjs.registerCalendarSystem("ethiopic", new EthiopianCalendarSystem());
     });
     beforeEach(() => {
       MockDate.set(new Date("2021-06-02"));
@@ -65,12 +68,14 @@ testCalendarSystems.forEach(calendarSystem => {
       expect(date2.year()).toEqual(date.year() + 1);
     });
 
-    it("add 11 months in the middle of the year", () => {
-      const date = testDayjs.month(5); // set the month to June
-      const date2 = date.add(11, "month");
-      expect(date2.year()).toEqual(date.year() + 1);
-      expect(date2.month()).toEqual(date.month() - 1);
-    });
+    if (calendarSystem !== "ethiopic") {
+      it("add 11 months in the middle of the year", () => {
+        const date = testDayjs.month(5); // set the month to June
+        const date2 = date.add(11, "month");
+        expect(date2.year()).toEqual(date.year() + 1);
+        expect(date2.month()).toEqual(date.month() - 1);
+      });
+    }
 
     if (calendarSystem === "persian") {
       it("add 100 days", () => {

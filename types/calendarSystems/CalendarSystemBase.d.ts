@@ -11,10 +11,12 @@ export declare abstract class CalendarSystemBase {
 
     abstract convertFromGregorian(date: Date | DateLikeObject | DayjsLikeObject | string | number | undefined | null): { year: number; month: number; day: number; } | void;
     abstract convertToGregorian(year: number, month: number, day: number): { year: number; month: number; day: number; } | void;
+    abstract convertFromJulian(julianDay: number): [ number, number, number ];
     abstract convertToJulian(year: number, month: number, day: number): number;
     abstract monthNames(locale: string, calendar: string, firstMonthName: string): string[];
     getLocalizedMonthName(monthIndex: number): string;
     localeOverride(locale: string): Object;
+    validateDate(date: Date | DateLikeObject | DayjsLikeObject | string | number | undefined | null): Date;
     isLeapYear?(): boolean;
     daysInMonth?(): number;
     startOf?(units: OpUnitType,isStartOf: Boolean): Dayjs;
