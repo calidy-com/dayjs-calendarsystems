@@ -2,7 +2,11 @@ module.exports = {
   env: {
     test: {
       presets: [
-        '@babel/preset-env'
+        ['@babel/preset-env', {
+          targets: {
+            node: 'current' // Transpile for the current version of Node.js
+          }
+        }]
       ]
     },
     build: {
@@ -10,7 +14,7 @@ module.exports = {
         [
           '@babel/preset-env',
           {
-            modules: false,
+            modules: false, // Preserve ES modules
             loose: true
           }
         ]
