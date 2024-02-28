@@ -6,7 +6,7 @@ import { CalendarSystemBase } from './calendarSystems/CalendarSystemBase';
 // 'buddhist' | 'chinese' | 'coptic' | 'dangi' | 'ethioaa' | 'ethiopic' | 'gregory' | 'hebrew' | 'indian' | 'islamic' | 'islamic-civil' | 'islamic-rgsa' | 'islamic-tbla' | 'islamic-umalqura' | 'islamicc' | 'iso8601' | 'japanese' | 'persian' | 'roc'
 // Our supported Calendar Systems (alphabetical order)
 // ! Note that we use the default "islamic-umalqura" calendar system for "islamic" calendar system
-export type CalendarSystem =  'ethiopic' | 'gregory' | 'hebrew' | 'islamic' | 'persian';
+export type CalendarSystem =  'amazigh' | 'ethiopic' | 'gregory' | 'hebrew' | 'islamic' | 'persian';
 
 declare module 'dayjs' {
   interface Dayjs {

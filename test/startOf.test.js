@@ -4,6 +4,7 @@ import GregoryCalendarSystem from "../src/calendarSystems/GregoryCalendarSystem"
 import PersianCalendarSystem from "../src/calendarSystems/PersianCalendarSystem";
 import HijriCalendarSystem from "../src/calendarSystems/HijriCalendarSystem";
 import HebrewCalendarSystem from "../src/calendarSystems/HebrewCalendarSystem";
+import AmazighCalendarSystem from "../src/calendarSystems/AmazighCalendarSystem";
 
 describe("startOf method with different calendar systems", () => {
   beforeAll(() => {
@@ -12,6 +13,7 @@ describe("startOf method with different calendar systems", () => {
     dayjs.registerCalendarSystem("persian", new PersianCalendarSystem());
     dayjs.registerCalendarSystem("islamic", new HijriCalendarSystem());
     dayjs.registerCalendarSystem("hebrew", new HebrewCalendarSystem());
+    dayjs.registerCalendarSystem("amazigh", new AmazighCalendarSystem());
   });
 
   test("should return the start of the year in Gregorian calendar", () => {
@@ -36,5 +38,11 @@ describe("startOf method with different calendar systems", () => {
     const date = dayjs("2022-09-30").toCalendarSystem("hebrew");
     const startOfYear = date.startOf("year");
     expect(startOfYear.format("YYYY-MM-DD")).toBe("5783-01-01"); // Tishri 1, 5783
+  });
+
+  test("should return the start of the year in Amazigh calendar", () => {
+    const date = dayjs("2024-02-28").toCalendarSystem("amazigh");
+    const startOfYear = date.startOf("year");
+    expect(startOfYear.format("YYYY-MM-DD")).toBe("2974-01-01"); // Yennayer 1, 2974
   });
 });

@@ -31,6 +31,11 @@ function getMonthNames(locale, calendar = "persian") {
   if (!monthNamesCache[cacheKey]) {
     const monthNames = [];
     for (let i = 0; i < 12; i++) {
+      if (calendar === "amazigh") {
+        // Use the function to get localized Amazigh month names
+        monthNames.push(getLocalizedAmazighMonthName(i, locale));
+      } else {
+        // For other calendars, use Intl.DateTimeFormat
       const date = new Date(2023, i, 1);
       const formatter = new Intl.DateTimeFormat(`${locale}-u-ca-${calendar}`, {
         month: "long",
@@ -57,6 +62,42 @@ function shiftAndSortMonthNames(locale, firstMonthIndex, calendar = "persian") {
 
   return shiftedSortedMonthNamesCache[cacheKey];
 }
+
+/**
+ * Enhanced utility functions to include locale-specific Amazigh calendar month names in English, Tamazight and Arabic.
+ */
+// Define Amazigh month names in Tamazight (Tifinagh script), Arabic, and English.
+const amazighMonthNamesByLocale = {
+  "tzm": [ // Tamazight in Tifinagh script
+    "ⵢⴻⵏⵏⴰⵢⴻⵔ", "ⴼⵓⵔⴰⵔ", "ⵎⴻⵖⵔⴻⵙ", "ⵢⴻⴱⵔⵉⵔ", "ⵎⴰⵢⵢⵓ", "ⵢⵓⵏⵢⵓ",
+    "ⵢⵓⵍⵢⵓⵣ", "ⵖⵓⵛⵜ", "ⵙⵓⵜⴻⵏⴱⵉⵔ", "ⴽⵜⵓⴱⵔ", "ⵏⵓⵏⴻⵎⴱⵉⵔ", "ⴷⵓⵊⴻⵎⴱⵉⵔ"
+  ],
+  "ar": [ // Arabic
+    "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+    "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+  ],
+  "default": [ // English and other locales
+    "Yennayer", "Furar", "Meghres", "Yebrir", "Mayyu", "Yunyu",
+    "Yulyu", "Ghuct", "Cutenber", "Ktuber", "Nunember", "Dujember"
+  ]
+};
+
+/**
+ * Returns the localized name of a month for the Amazigh calendar based on the locale.
+ * @param {number} monthIndex - The index of the month (0 = Yennayer, 11 = Dujember).
+ * @param {string} locale - The locale code (e.g., "tzm" for Tamazight, "ar" for Arabic).
+ * @returns {string} The localized name of the month.
+ */
+function getLocalizedAmazighMonthName(monthIndex, locale) {
+  // Determine which set of month names to use based on the locale
+  if (amazighMonthNamesByLocale[locale]) {
+    return amazighMonthNamesByLocale[locale][monthIndex];
+  } else {
+    // Default to English if the locale is not specifically handled
+    return amazighMonthNamesByLocale["default"][monthIndex];
+  }
+}
+
 
 export function generateMonthNames(
   locale,

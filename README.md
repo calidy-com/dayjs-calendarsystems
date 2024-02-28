@@ -18,6 +18,7 @@ Day.js Calendar Systems Plugin extends Day.js library to allow the use of differ
 * Persian (a.k.a.: Jalaali, Shamsi, Khorshidi),
 * Arabic (a.k.a: Hijri, Islamic, Umalqura, Ghamari),
 * Hebrew (a.k.a: Jewish),
+* Amazigh (a.k.a: Berber),
 * and more to come (PRs are welcome).
 
 With this plugin, Day.js will be available to more than 200 million additional users worldwide (Estimated number of non-gregorian calendar users).
@@ -40,6 +41,7 @@ With the `@calidy/dayjs-calendarsystems` plugin, we bring the capacity to run an
 - 🌍 🗓️ 🇮🇷 Persian Calendar system available.
 - 🌍 🗓️ 🇸🇦 Islamic (Hijri, Umalqura) Calendar system. Note: we will use the default "islamic-umalqura" calendar system for "islamic" calendar system.
 - 🌍 🗓️ 🇮🇱 Hebrew (Jewish) Calendar system.
+- 🌍 🗓️ ⵣ **[Need more testing]** Amazigh (Berber) Calendar system.
 - 🌍 🗓️ 🇪🇹 **[WIP]** Ethiopian Calendar system.
 - 🌍 🗓️ 🇮🇳 **[TODO]** Indian Calendar system.
 - 🌍 🗓️ 🇨🇳 **[TODO]** Chinese Calendar system.
