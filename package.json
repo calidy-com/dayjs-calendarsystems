@@ -19,7 +19,7 @@
     "size": "size-limit",
     "release": "standard-version $* && git push --follow-tags && yarn run npmpublish",
     "prepublishOnly": "npm run build",
-    "npmpublish": "npm publish --access public"
+    "npmpublish": "npm publish --access public --auth-type legacy"
   },
   "pre-commit": [
     "lint"
