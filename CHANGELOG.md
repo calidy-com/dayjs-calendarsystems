@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.4.0...v1.10.0) (2024-02-28)
+
+
+### Features
+
+* add Amazigh calendar system ([2d9a8e9](https://github.com/calidy-com/dayjs-calendarsystems/commit/2d9a8e9b0c5c443040072080edfe748abfef5e9a))
+
+
+### Bug Fixes
+
+* buildtime issues, add eslintrc ([13b5594](https://github.com/calidy-com/dayjs-calendarsystems/commit/13b5594c71674ebbd29d03a9af8ffd3ac02301b9))
+* typo in function brackets ([595d119](https://github.com/calidy-com/dayjs-calendarsystems/commit/595d1193c9cedeeaee39b9ae6c617dba6bcd338a))
+* update babel build config ([7d448cb](https://github.com/calidy-com/dayjs-calendarsystems/commit/7d448cbe6d95f40ad0e32d69eacf5bd0698807cc))
+
+## [1.9.0](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.4.0...v1.9.0) (2024-02-28)
+
+
+### Features
+
+* add Amazigh calendar system ([2d9a8e9](https://github.com/calidy-com/dayjs-calendarsystems/commit/2d9a8e9b0c5c443040072080edfe748abfef5e9a))
+
+
+### Bug Fixes
+
+* buildtime issues, add eslintrc ([13b5594](https://github.com/calidy-com/dayjs-calendarsystems/commit/13b5594c71674ebbd29d03a9af8ffd3ac02301b9))
+* typo in function brackets ([595d119](https://github.com/calidy-com/dayjs-calendarsystems/commit/595d1193c9cedeeaee39b9ae6c617dba6bcd338a))
+* update babel build config ([7d448cb](https://github.com/calidy-com/dayjs-calendarsystems/commit/7d448cbe6d95f40ad0e32d69eacf5bd0698807cc))
+
+## [1.8.0](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.4.0...v1.8.0) (2024-02-28)
+
+
+### Features
+
+* add Amazigh calendar system ([2d9a8e9](https://github.com/calidy-com/dayjs-calendarsystems/commit/2d9a8e9b0c5c443040072080edfe748abfef5e9a))
+
+
+### Bug Fixes
+
+* buildtime issues, add eslintrc ([13b5594](https://github.com/calidy-com/dayjs-calendarsystems/commit/13b5594c71674ebbd29d03a9af8ffd3ac02301b9))
+* typo in function brackets ([595d119](https://github.com/calidy-com/dayjs-calendarsystems/commit/595d1193c9cedeeaee39b9ae6c617dba6bcd338a))
+* update babel build config ([7d448cb](https://github.com/calidy-com/dayjs-calendarsystems/commit/7d448cbe6d95f40ad0e32d69eacf5bd0698807cc))
+
 ## [1.7.0](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.4.0...v1.7.0) (2024-02-28)
 
 
