@@ -41,6 +41,7 @@ function getMonthNames(locale, calendar = "persian") {
         month: "long",
       });
       monthNames.push(formatter.format(date));
+      }
     }
     monthNamesCache[cacheKey] = monthNames;
   }
