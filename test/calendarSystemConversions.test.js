@@ -4,12 +4,14 @@ import GregoryCalendarSystem from "../src/calendarSystems/GregoryCalendarSystem"
 import PersianCalendarSystem from "../src/calendarSystems/PersianCalendarSystem";
 import HijriCalendarSystem from "../src/calendarSystems/HijriCalendarSystem";
 import HebrewCalendarSystem from "../src/calendarSystems/HebrewCalendarSystem";
+import AmazighCalendarSystem from "../src/calendarSystems/AmazighCalendarSystem";
 
 describe('Calendar Systems Conversion', () => {
   const targetDate = "2023-05-24";
   const targetPersianDate = "1402-03-03";
   const targetIslamicDate = "1444-11-04";
   const targetHebrewDate = "5783-03-04";
+  const targetAmazighDate = "2973-05-11";
 
   beforeAll(() => {
     dayjs.extend(calendarSystems);
@@ -17,6 +19,7 @@ describe('Calendar Systems Conversion', () => {
     dayjs.registerCalendarSystem("persian", new PersianCalendarSystem());
     dayjs.registerCalendarSystem("islamic", new HijriCalendarSystem());
     dayjs.registerCalendarSystem("hebrew", new HebrewCalendarSystem());
+    dayjs.registerCalendarSystem("amazigh", new AmazighCalendarSystem());
   });
 
   test('Convert to Hebrew', () => {
@@ -37,6 +40,11 @@ describe('Calendar Systems Conversion', () => {
   test('Convert to Islamic', () => {
     const hijriDate = dayjs(targetDate).toCalendarSystem("islamic").format("YYYY-MM-DD");
     expect(hijriDate).toEqual(targetIslamicDate);
+  });
+
+  test('Convert to Amazigh', () => {
+    const amazighDate = dayjs(targetDate).toCalendarSystem("amazigh").format("YYYY-MM-DD");
+    expect(amazighDate).toEqual(targetAmazighDate);
   });
 
   test('Convert Persian to Gregorian', () => {
@@ -79,4 +87,29 @@ describe('Calendar Systems Conversion', () => {
     expect(islamicToGregorian).toEqual(targetDate);
   });
 
+  test('Convert Amazigh to Gregorian', () => {
+    const amazighToGregorian = dayjs(targetDate).toCalendarSystem("amazigh").toCalendarSystem("gregory").format("YYYY-MM-DD");
+    expect(amazighToGregorian).toEqual(targetDate);
+  });
+
+  test('Convert Amazigh to Persian', () => {
+    const amazighToPersian = dayjs(targetDate).toCalendarSystem("amazigh").toCalendarSystem("persian").format("YYYY-MM-DD");
+    expect(amazighToPersian).toEqual(targetPersianDate);
+  });
+
+  test('Convert Amazigh to Islamic', () => {
+    const amazighToIslamic = dayjs(targetDate).toCalendarSystem("amazigh").toCalendarSystem("islamic").format("YYYY-MM-DD");
+    expect(amazighToIslamic).toEqual(targetIslamicDate);
+  });
+
+  test('Convert Amazigh to Hebrew', () => {
+    const amazighToHebrew = dayjs(targetDate).toCalendarSystem("amazigh").toCalendarSystem("hebrew").format("YYYY-MM-DD");
+    expect(amazighToHebrew).toEqual(targetHebrewDate);
+  });
+
+  test('Convert Persian to Amazigh', () => {
+    const persianToAmazigh = dayjs(targetDate).toCalendarSystem("persian").toCalendarSystem("amazigh").format("YYYY-MM-DD");
+    expect(persianToAmazigh).toEqual(targetAmazighDate);
+  });
+  
 });

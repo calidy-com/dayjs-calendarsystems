@@ -7,6 +7,7 @@ import GregoryCalendarSystem from "../src/calendarSystems/GregoryCalendarSystem"
 import PersianCalendarSystem from "../src/calendarSystems/PersianCalendarSystem";
 import HijriCalendarSystem from "../src/calendarSystems/HijriCalendarSystem";
 import HebrewCalendarSystem from "../src/calendarSystems/HebrewCalendarSystem";
+import AmazighCalendarSystem from "../src/calendarSystems/AmazighCalendarSystem";
 // import "dayjs/locale/fa";
 
 describe("daysInMonth method with different calendar systems", () => {
@@ -18,6 +19,7 @@ describe("daysInMonth method with different calendar systems", () => {
     dayjs.registerCalendarSystem("persian", new PersianCalendarSystem());
     dayjs.registerCalendarSystem("islamic", new HijriCalendarSystem());
     dayjs.registerCalendarSystem("hebrew", new HebrewCalendarSystem());
+    dayjs.registerCalendarSystem("amazigh", new AmazighCalendarSystem());
   });
 
   test("should return the correct number of days in a month for Gregorian calendar", () => {
@@ -221,4 +223,24 @@ describe("daysInMonth method with different calendar systems", () => {
     const daysInElul = dateInElul.daysInMonth();
     expect(daysInElul).toBe(29);
   });
+
+  test("should return the correct number of days in a month for Amazigh calendar", () => {
+    const dateInYennayer = dayjs("2023-01-14").toCalendarSystem("amazigh");
+    const daysInYennayer = dateInYennayer.daysInMonth();
+    expect(daysInYennayer).toBe(31);
+
+    const dateInYunyu = dayjs("2023-02-16").toCalendarSystem("amazigh");
+    const daysInYunyu = dateInYunyu.daysInMonth();
+    expect(daysInYunyu).toBe(28);
+
+    const dateInFuṛar = dayjs("2023-03-16").toCalendarSystem("amazigh");
+    const daysInFuṛar = dateInFuṛar.daysInMonth();
+    expect(daysInFuṛar).toBe(31);
+
+    const dateInMeɣres = dayjs("2023-04-18").toCalendarSystem("amazigh");
+    const daysInMeɣres = dateInMeɣres.daysInMonth();
+    expect(daysInMeɣres).toBe(30);
+
+  });
+
 });

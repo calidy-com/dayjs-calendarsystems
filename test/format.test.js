@@ -9,6 +9,7 @@ import GregoryCalendarSystem from "../src/calendarSystems/GregoryCalendarSystem"
 import PersianCalendarSystem from "../src/calendarSystems/PersianCalendarSystem";
 import HijriCalendarSystem from "../src/calendarSystems/HijriCalendarSystem";
 import HebrewCalendarSystem from "../src/calendarSystems/HebrewCalendarSystem";
+import AmazighCalendarSystem from "../src/calendarSystems/AmazighCalendarSystem";
 
 describe("startOf method with different calendar systems", () => {
   beforeAll(() => {
@@ -18,6 +19,7 @@ describe("startOf method with different calendar systems", () => {
     dayjs.registerCalendarSystem("persian", new PersianCalendarSystem());
     dayjs.registerCalendarSystem("islamic", new HijriCalendarSystem());
     dayjs.registerCalendarSystem("hebrew", new HebrewCalendarSystem());
+    dayjs.registerCalendarSystem("amazigh", new AmazighCalendarSystem());
   });
 
   test("should return the correct format for persian calendar", () => {
@@ -81,5 +83,26 @@ describe("startOf method with different calendar systems", () => {
       "Tuesday, Iyar 11, 5783 12:00 AM"
     );
     expect(date.locale("he").format("LLL")).toEqual("11 באייר 5783 00:00");
+  });
+
+  test("should return the correct format for Amazigh calendar", () => {
+    const date = dayjs("2023-05-24").toCalendarSystem("amazigh");
+    expect(date.format("YY")).toEqual("73");
+    expect(date.format("YYYY")).toEqual("2973");
+    expect(date.format("M")).toEqual("5");
+    expect(date.format("MM")).toEqual("05");
+    expect(date.format("MMM")).toEqual("May");
+    expect(date.format("MMMM")).toEqual("Mayyu");
+    expect(date.locale("fr").format("MMMM")).toEqual("Mayyu");
+    expect(date.format("DD")).toEqual("11");
+    expect(date.format("D")).toEqual("11");
+    expect(date.format("W")).toEqual("W");
+    expect(date.format("HH")).toEqual("00");
+    expect(date.format("LL")).toEqual("Mayyu 11, 2973");
+    expect(date.format("LLL")).toEqual("Mayyu 11, 2973 12:00 AM");
+    expect(date.format("LLLL")).toEqual(
+      "Wednesday, Mayyu 11, 2973 12:00 AM"
+    );
+    expect(date.locale("fr").format("LLL")).toEqual("11 Mayyu 2973 00:00");
   });
 });

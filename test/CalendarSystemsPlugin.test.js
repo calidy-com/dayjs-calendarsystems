@@ -9,6 +9,7 @@ import GregoryCalendarSystem from "../src/calendarSystems/GregoryCalendarSystem"
 import PersianCalendarSystem from "../src/calendarSystems/PersianCalendarSystem";
 import HijriCalendarSystem from "../src/calendarSystems/HijriCalendarSystem";
 import HebrewCalendarSystem from "../src/calendarSystems/HebrewCalendarSystem";
+import AmazighCalendarSystem from "../src/calendarSystems/AmazighCalendarSystem";
 
 describe("CalendarSystems Plugin", () => {
   beforeAll(() => {
@@ -19,6 +20,7 @@ describe("CalendarSystems Plugin", () => {
     dayjs.registerCalendarSystem("persian", new PersianCalendarSystem());
     dayjs.registerCalendarSystem("islamic", new HijriCalendarSystem());
     dayjs.registerCalendarSystem("hebrew", new HebrewCalendarSystem());
+    dayjs.registerCalendarSystem("amazigh", new AmazighCalendarSystem());
   });
 
   test("should register and retrieve a calendar system", () => {
@@ -33,6 +35,9 @@ describe("CalendarSystems Plugin", () => {
 
     const hebrewCalendar = dayjs.getRegisteredCalendarSystem("hebrew");
     expect(hebrewCalendar).toBeInstanceOf(HebrewCalendarSystem);
+
+    const amazighCalendar = dayjs.getRegisteredCalendarSystem("amazigh");
+    expect(amazighCalendar).toBeInstanceOf(AmazighCalendarSystem);
   });
 
   test("should convert a Day.js instance to a specific calendar system", () => {
@@ -51,6 +56,12 @@ describe("CalendarSystems Plugin", () => {
     expect(hebrewDate.$y).toEqual(5783);
     expect(hebrewDate.$M).toEqual(0);  // Nisan is 1st month but the indexes are 0 based so we use 0. (Months are 0-based)
     expect(hebrewDate.$D).toEqual(23);
+
+    const amazighDate = date.toCalendarSystem("amazigh");
+    expect(amazighDate.$y).toEqual(2973);
+    expect(amazighDate.$M).toEqual(3); // May is 4th month but the indexes are 0 based so we use 3. (Months are 0-based)
+    expect(amazighDate.$D).toEqual(1);
+
   });
 
   test("should throw an error for an unregistered calendar system", () => {

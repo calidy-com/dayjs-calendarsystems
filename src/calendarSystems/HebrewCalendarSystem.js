@@ -64,7 +64,7 @@ export default class HebrewCalendarSystem extends CalendarSystemBase {
     const convertedDateArray = CalendarUtils.jd_to_hebrew(julianDay);
     return {
       year: convertedDateArray[0],
-      month: convertedDateArray[1] - 1, // -1 because the Persian month is 0-based
+      month: convertedDateArray[1] - 1, // -1 because the month is 0-based
       day: convertedDateArray[2],
     };
   }
@@ -97,8 +97,11 @@ export default class HebrewCalendarSystem extends CalendarSystemBase {
     };
   }
 
-  isLeapYear() {
-    return CalendarUtils.hebrew_leap(this.$y);
+  isLeapYear(year=null) {
+    if(year === null) {
+      year = this.$y;
+    }
+    return CalendarUtils.hebrew_leap(year);
   }
 
   monthNames(locale = "en", calendar = "hebrew", firstMonthName = "Nisan") {

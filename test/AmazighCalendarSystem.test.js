@@ -1,5 +1,4 @@
 import AmazighCalendarSystem from "../src/calendarSystems/AmazighCalendarSystem";
-// Assuming you have or will create equivalent utility functions for Amazigh calendar conversions
 import * as CalendarUtils from "../src/calendarUtils/fourmilabCalendar";
 
 describe("AmazighCalendarSystem", () => {
@@ -26,10 +25,9 @@ describe("AmazighCalendarSystem", () => {
   });
 
   test("convertToGregorian should return the correct Gregorian date", () => {
-    const date = { year: 2973, month: 1, day: 25 }; // Amazigh date
-    // Assuming jd_to_gregorian and amazigh_to_jd functions are correctly implemented
+    const date = { year: 2973, month: 0, day: 1 }; // Amazigh date (Yennayer 1, 2973)
     const [gy, gm, gd] = CalendarUtils.jd_to_gregorian(
-        amazighCalendar.convertToJulian(date.year, date.month + 1, date.day) + 0.5
+        amazighCalendar.convertToJulian(date.year, date.month, date.day)
     );
     const convertedDate = amazighCalendar.convertToGregorian(
       date.year,

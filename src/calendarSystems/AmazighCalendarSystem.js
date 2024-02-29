@@ -27,140 +27,239 @@ export default class AmazighCalendarSystem extends CalendarSystemBase {
     );
   }
 
+  // Returns a zero-based month index
   /**
    * Converts a Julian Day Number to an Amazigh date.
    * @param {number} jdn - The Julian Day Number.
    * @returns {Object} An object containing the Amazigh year, month, and day.
    */
-  convertFromJulian(jdn) {
-    // Constants for JDN of the Julian calendar start and the Amazigh calendar start year
-    const JDN_JULIAN_START = 2299160.5; // October 15, 1582, Gregorian calendar start (end of Julian calendar)
-    const AMZ_YEAR_START = 950; // Amazigh calendar start year in BC
-    const DAYS_IN_YEAR = 365.25; // Average days in a year accounting for leap years in Julian calendar
-    const GREGORIAN_START_YEAR = 1582; // Year the Gregorian calendar starts
-    const YENNAYER_JDN_OFFSET = 13; // Offset for Yennayer in the Gregorian calendar as of the 21st century
-
-    // Calculate the Gregorian year for the given JDN
-    let year = GREGORIAN_START_YEAR + Math.floor((jdn - JDN_JULIAN_START) / DAYS_IN_YEAR);
-    // Adjust the year based on the Amazigh calendar start year
-    let amazighYear = year + (AMZ_YEAR_START - (year < 0 ? 1 : 0)); // Adjust for no year 0 in historical counting
-
-    // Calculate the JDN for January 1st of the given year
-    let jdnJan1 = jdn - ((jdn - JDN_JULIAN_START) % DAYS_IN_YEAR);
-    // Calculate the day of the year from JDN
-    let dayOfYear = jdn - jdnJan1 + 1; // +1 since January 1st is day 1
-
-    // Adjust dayOfYear based on the Yennayer offset
-    dayOfYear -= YENNAYER_JDN_OFFSET;
-
-    // Correct the year and dayOfYear if the adjustment crosses into the previous year
-    if (dayOfYear <= 0) {
-        amazighYear -= 1;
-        dayOfYear += DAYS_IN_YEAR; // Add the days in a year to the negative dayOfYear
-    }
-
-    // Determine the month and day from dayOfYear
-    let month = 0, day = dayOfYear;
-    const daysInMonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; // Days in each month for Julian calendar
-    while (day > daysInMonths[month]) {
-        day -= daysInMonths[month];
-        month += 1;
-    }
-
-    // Adjust for the Amazigh calendar specifics if necessary
-    // Note: This example uses a simplified approach and might need adjustments for leap years and accurate month lengths
-
-    return [
-        amazighYear,
-        month + 1, // +1 to make the month 1-based
-        day
-    ];
-}
-
-
-  // Convert Amazigh date to Julian Day
-  convertToJulian(calendarYear, calendarMonth, calendarDay) {
-    // Convert Amazigh year to Gregorian year
-    const gregorianYear = calendarYear + 950;
-    // Adjusting for Yennayer starting on January 14th in the Gregorian calendar
-    const isBeforeYennayer = calendarMonth === 0 && calendarDay < 14;
-    const adjustedYear = gregorianYear - (isBeforeYennayer ? 1 : 0);
-    const adjustedMonth = isBeforeYennayer ? 12 : calendarMonth + 1; // Adjust month to 1-based for calculation
-    const adjustedDay = calendarDay + (isBeforeYennayer ? 18 : 13); // Adjust days for Yennayer start, considering the current 13-day discrepancy
-
-    // Convert adjusted Gregorian date to Julian Day
-    return CalendarUtils.gregorian_to_jd(adjustedYear, adjustedMonth, adjustedDay);
+  convertFromJulian(julianDayNumber) {
+    // The Julian Day starts at noon, not at midnight.
+    julianDayNumber = julianDayNumber + 0.5;
+    const [gy, gm, gd] = CalendarUtils.jd_to_gregorian(julianDayNumber);
+    const amazighDate = this.adjustForYennayer({
+      year: gy,
+      month: gm - 1, // -1 because the jd_to_gregorian returns 1-based months but we need 0-based months for adjustForYennayer
+      day: gd,
+    });
+    return new Array(amazighDate.year, amazighDate.month, amazighDate.day);
   }
 
+  // Expects a zero-based month index
+  // The Julian Day starts at noon, not at midnight.
+  // So, when you convert a Gregorian date to a Julian Day number,
+  // the result is the Julian Day number for the noon of that day.
+  // If the time of the date is noon or later, the Julian Day number will be for the next day.
+  convertToJulian(
+    calendarYear,
+    calendarMonth,
+    calendarDay,
+    hour = 0,
+    minute = 0,
+    second = 0
+  ) {
+    // Convert Amazigh year to Gregorian year
+    const gregorianYear = calendarYear - 950; // Amazigh calendar starts in 950 BC in the Gregorian calendar
 
-  // Convert from Gregorian date to Amazigh date
-  convertFromGregorian(date) {
-    const julianDay = CalendarUtils.gregorian_to_jd(date.getFullYear(), date.getMonth() + 1, date.getDate());
-    const gregorianYear = date.getFullYear();
-    const gregorianMonth = date.getMonth() + 1; // 1-based month
-    const gregorianDay = date.getDate();
+    // Initial conversion without adjusting for Yennayer
+    let gregorianDate = {
+      year: gregorianYear,
+      month: calendarMonth,
+      day: calendarDay,
+    };
 
-    // Calculate the Amazigh year
-    let amazighYear = gregorianYear - 950;
-    if (gregorianMonth < 1 || (gregorianMonth === 1 && gregorianDay < 14)) {
-      amazighYear -= 1; // Adjust for Yennayer
+    const yennayerGregorianDate = new Date(gregorianYear, 0, 14); // January is month 0 in JavaScript Date
+
+    // Calculate the Julian Day Number (JDN) for Yennayer
+    let julianDayYennayer = CalendarUtils.gregorian_to_jd(
+      yennayerGregorianDate.getFullYear(),
+      yennayerGregorianDate.getMonth() + 1,
+      yennayerGregorianDate.getDate()
+    );
+
+    // Step 3: Calculate the total number of days from Yennayer to the given Amazigh date
+    // Adjust month and day based on dayOfYear
+    const daysInMonths = [
+      31,
+      calendarYear % 4 === 0 ? 29 : 28,
+      31,
+      30,
+      31,
+      30,
+      31,
+      31,
+      30,
+      31,
+      30,
+      31,
+    ]; // Considering leap years
+    let daysSinceYennayer = 0;
+    for (let month = 0; month < calendarMonth; month++) {
+      // Assuming 30 days per month for simplicity; adjust based on the actual Amazigh calendar if necessary
+      daysSinceYennayer += daysInMonths[month];
     }
 
-    // Convert Julian day back to Gregorian to adjust for Yennayer offset
-    const { year, month, day } = CalendarUtils.jd_to_gregorian(julianDay - 13);
+    daysSinceYennayer += calendarDay - 1; // Subtract 1 since Yennayer is day 1
 
+    // Calculate the final Julian Day Number (JDN) by adding the days since Yennayer to the JDN of Yennayer
+    let finalJdn = julianDayYennayer + daysSinceYennayer
+    // Adjust for the time of day
+     + Math.floor(second + 60 * (minute + 60 * hour) + 0.5) / 86400.0
+
+    return finalJdn;
+  }
+
+  // Convert from Gregorian date to Amazigh date
+  // Returns a zero-based month index
+  // Expects a zero-based month index
+  convertFromGregorian(date) {
+    date = this.validateDate(date);
+
+    const julianDay =
+      CalendarUtils.gregorian_to_jd(
+        date.getFullYear(),
+        date.getMonth() + 1,
+        date.getDate()
+      ) +
+      Math.floor(
+        date.getSeconds() +
+          60 * (date.getMinutes() + 60 * date.getHours()) +
+          0.5
+      ) /
+        86400.0 -
+      0.5;
+    const convertedDateArray = this.convertFromJulian(julianDay);
     return {
-      year: year - 950,
-      month: month - 1, // Convert to 0-based month index
-      day: day,
+      year: convertedDateArray[0],
+      month: convertedDateArray[1] - 1, // -1 because the month is 0-based
+      day: convertedDateArray[2],
     };
   }
 
-  convertToGregorian(calendarYear, calendarMonth, calendarDay) {
-    // Calculate the Gregorian year for the given Amazigh year.
-    const baseYear = -950; // Starting point of the Amazigh calendar in the Gregorian calendar (950 BC).
-    let gregorianYear = calendarYear + baseYear;
-
-    // Adjust for the current discrepancy between the Julian and Gregorian calendars.
-    const discrepancyDays = 13; // As of the 21st century, there's a 13-day difference between the calendars.
-    const yennayerGregorianDate = new Date(gregorianYear, 0, 14 + discrepancyDays); // January 14th + discrepancy in days.
-
-    // Calculate the Julian Day Number for Yennayer of the given Gregorian year.
-    let julianDayYennayer = this.convertToJulian(yennayerGregorianDate.getFullYear(), yennayerGregorianDate.getMonth(), yennayerGregorianDate.getDate());
-
-    // Considering the Amazigh calendar follows the Julian calendar with months having the same length,
-    // we calculate the total number of days since Yennayer to the Amazigh date.
-    let daysSinceYennayer = 0;
-    for (let month = 0; month < calendarMonth; month++) {
-        daysSinceYennayer += month === 1 ? 28 : (month < 7 ? (month % 2 === 0 ? 31 : 30) : (month % 2 === 0 ? 30 : 31));
-    }
-    daysSinceYennayer += calendarDay - 1; // Subtract one since Yennayer is considered day 1.
-
-    // Calculate the total Julian Day and convert it back to a Gregorian date.
-    let julianDay = julianDayYennayer + daysSinceYennayer;
+  // Returns a zero-based month index
+  // Expects a zero-based month index
+  convertToGregorian(
+    calendarYear,
+    calendarMonth,
+    calendarDay,
+    hour = 0,
+    minute = 0,
+    second = 0,
+    millisecond = 0
+  ) {
+    const julianDay = this.convertToJulian(
+      calendarYear,
+      calendarMonth,
+      calendarDay,
+      hour,
+      minute,
+      second,
+      millisecond
+    );
     const gregorianDateArray = CalendarUtils.jd_to_gregorian(julianDay);
     return {
       year: gregorianDateArray[0],
       month: gregorianDateArray[1] - 1, // -1 because the Gregorian month is 0-based
       day: gregorianDateArray[2],
     };
-}
+  }
 
-  isLeapYear(year) {
+  isLeapYear(year = null) {
+    if (year === null) {
+      year = this.$y;
+    }
     // Adjust if Amazigh leap year rules differ, using Gregorian as placeholder
     const adjustedYear = year + 950;
-    return (adjustedYear % 4 === 0 && adjustedYear % 100 !== 0) || adjustedYear % 400 === 0;
+    return (
+      (adjustedYear % 4 === 0 && adjustedYear % 100 !== 0) ||
+      adjustedYear % 400 === 0
+    );
   }
-  monthNames(
-    locale = "en",
-    calendar = "amazigh",
-    firstMonthName = "Yennayer"
-  ) {
+
+  monthNames(locale = "en", calendar = "amazigh", firstMonthName = "Yennayer") {
     return generateMonthNames(locale, calendar, firstMonthName);
   }
 
   getLocalizedMonthName(monthIndex) {
     return this.monthNamesLocalized[monthIndex];
   }
-}
 
+  gregorianToAmazighYear(gregorianYear) {
+    // The Amazigh year 2974 corresponds to Gregorian year 2024
+    const referenceAmazighYear = 2974;
+    const referenceGregorianYear = 2024;
+    const yearDifference = gregorianYear - referenceGregorianYear;
+    return referenceAmazighYear + yearDifference;
+  }
+
+  // Returns a zero-based month index
+  // Expects a zero-based month index
+  adjustForYennayer(gregorianDate) {
+    // Constants for the Amazigh New Year in the Gregorian calendar
+    const yennayerMonth = 0; // January, zero-based index
+    const yennayerDay = 14;
+
+    // Convert the Gregorian year to the Amazigh year
+    let amazighYear = this.gregorianToAmazighYear(gregorianDate.year);
+
+    // Check if the Gregorian date is before Yennayer and adjust the Amazigh year accordingly
+    if (
+      gregorianDate.month < yennayerMonth ||
+      (gregorianDate.month === yennayerMonth && gregorianDate.day < yennayerDay)
+    ) {
+      amazighYear -= 1; // The date is in the previous Amazigh year
+    }
+
+    // Calculate the Julian Day Number for the given Gregorian date and for Yennayer
+    const jdnForGregorianDate = CalendarUtils.gregorian_to_jd(
+      gregorianDate.year,
+      gregorianDate.month + 1,
+      gregorianDate.day
+    );
+    const jdnForYennayerThisYear = CalendarUtils.gregorian_to_jd(
+      gregorianDate.year,
+      yennayerMonth + 1,
+      yennayerDay
+    );
+
+    // Determine if we need to use Yennayer from the previous Gregorian year for the calculation
+    const usePreviousYearYennayer =
+      gregorianDate.month < yennayerMonth ||
+      (gregorianDate.month === yennayerMonth &&
+        gregorianDate.day < yennayerDay);
+    const jdnForYennayer = usePreviousYearYennayer
+      ? CalendarUtils.gregorian_to_jd(
+          gregorianDate.year - 1,
+          yennayerMonth + 1,
+          yennayerDay
+        )
+      : jdnForYennayerThisYear;
+
+    // Calculate the day of the year in the Amazigh calendar
+    let dayOfYear = jdnForGregorianDate - jdnForYennayer + 1; // +1 because Yennayer is day 1
+
+    // Determine the Amazigh month and day from the day of the year
+    const daysInAmazighMonths = [
+      31,
+      amazighYear % 4 === 0 ? 29 : 28,
+      31,
+      30,
+      31,
+      30,
+      31,
+      31,
+      30,
+      31,
+      30,
+      31,
+    ]; // Considering leap years
+    let month = 0;
+    while (dayOfYear > daysInAmazighMonths[month]) {
+      dayOfYear -= daysInAmazighMonths[month];
+      month++;
+    }
+
+    // Adjust month to be zero-based and ensure dayOfYear is correctly calculated
+    return { year: amazighYear, month: month + 1, day: dayOfYear };
+  }
+}

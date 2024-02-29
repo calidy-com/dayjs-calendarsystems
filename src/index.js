@@ -188,6 +188,7 @@ export default (options, dayjsClass, dayjsFactory) => {
           : instanceFactory(
               0,
               0,
+              //this.$y + parseInt((this.$M + 1) / monthsInYear, 10)
               this.$y + 1
             );
       case "month":
@@ -451,7 +452,7 @@ export default (options, dayjsClass, dayjsFactory) => {
     ];
     // We patch some locale dictionaries that have wrongly named months:
     // This is a costly operation, so we only do it for locales that need it.
-    if (typeof preset === "string" && buggyLocales.includes(preset)) {
+    if (typeof preset === "string" && ( buggyLocales.includes(preset) || calendarSystem == "amazigh")) {
       return dayjsFactory.updateLocale(
         preset,
         calendarSystems[calendarSystem].localeOverride(preset)

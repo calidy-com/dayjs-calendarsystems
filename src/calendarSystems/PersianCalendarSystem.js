@@ -43,11 +43,7 @@ export default class PersianCalendarSystem extends CalendarSystemBase {
   ) {
     // calendarMonth = calendarMonth+1 because the *_to_jd function month is 1-based
     return (
-      CalendarUtils.persiana_to_jd(
-        calendarYear,
-        calendarMonth + 1,
-        calendarDay
-      ) +
+      CalendarUtils.persiana_to_jd(calendarYear, calendarMonth + 1, calendarDay) +
       // We adjust the time to midnight. (noon -> midnight , diff 0.5)
       0.5 +
       Math.floor(second + 60 * (minute + 60 * hour) + 0.5) / 86400.0
@@ -73,7 +69,7 @@ export default class PersianCalendarSystem extends CalendarSystemBase {
     const convertedDateArray = CalendarUtils.jd_to_persiana(julianDay);
     return {
       year: convertedDateArray[0],
-      month: convertedDateArray[1] - 1, // -1 because the Persian month is 0-based
+      month: convertedDateArray[1] - 1, // -1 because the month is 0-based
       day: convertedDateArray[2],
     };
   }
@@ -106,8 +102,11 @@ export default class PersianCalendarSystem extends CalendarSystemBase {
     };
   }
 
-  isLeapYear() {
-    return CalendarUtils.leap_persiana(this.$y);
+  isLeapYear(year=null) {
+    if(year === null) {
+      year = this.$y;
+    }
+    return CalendarUtils.leap_persiana(year);
   }
 
   monthNames(

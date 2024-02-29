@@ -42,11 +42,7 @@ export default class HijriCalendarSystem extends CalendarSystemBase {
   ) {
     // calendarMonth = calendarMonth+1 because the *_to_jd function month is 1-based
     return (
-      CalendarUtils.islamic_to_jd(
-        calendarYear,
-        calendarMonth + 1,
-        calendarDay
-      ) +
+      CalendarUtils.islamic_to_jd(calendarYear, calendarMonth + 1,calendarDay) +
       // TODO: Clarify why we do not need +0.5 to adjust the time to midnight.
       0 +
       Math.floor(second + 60 * (minute + 60 * hour) + 0.5) / 86400.0
@@ -105,8 +101,11 @@ export default class HijriCalendarSystem extends CalendarSystemBase {
     };
   }
 
-  isLeapYear() {
-    return CalendarUtils.leap_islamic(this.$y);
+  isLeapYear(year=null) {
+    if(year === null) {
+      year = this.$y;
+    }
+    return CalendarUtils.leap_islamic(year);
   }
 
   monthNames(
