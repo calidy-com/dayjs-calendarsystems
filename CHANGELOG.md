@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.11.3](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.11.2...v1.11.3) (2024-02-29)
+
+
+### Bug Fixes
+
+* amazigh calendar and tests are stable now. ([34b4e5e](https://github.com/calidy-com/dayjs-calendarsystems/commit/34b4e5ecdec14083621d40399b4368bc50cc6a06))
+
 ### [1.11.2](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.11.1...v1.11.2) (2024-02-28)
 
 
