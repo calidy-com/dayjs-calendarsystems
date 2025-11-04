@@ -8,35 +8,71 @@ describe("HijriCalendarSystem", () => {
     hijriCalendar = new HijriCalendarSystem();
   });
 
-  test("convertFromGregorian should return the correct Hijri date", () => {
-    const date = new Date(2023, 4, 14); // May 14, 2023
-    const [hy, hm, hd] = CalendarUtils.jd_to_islamic(
-      CalendarUtils.gregorian_to_jd(
-        date.getFullYear(),
-        date.getMonth() + 1,
-        date.getDate()
-      )
-    );
+  test("convertFromGregorian should use islamic-umalqura calendar via Intl API", () => {
+    // This test now validates that we're using the Intl API with islamic-umalqura
+    // which provides accurate conversions based on astronomical observations
+
+    // Test with April 14, 2023 at noon UTC
+    const date = new Date(Date.UTC(2023, 3, 14, 12, 0, 0)); // April 14, 2023
     const convertedDate = hijriCalendar.convertFromGregorian(date);
-    expect(convertedDate.year).toEqual(hy);
-    expect(convertedDate.month).toEqual(hm - 1); // -1 because the Hijri month is 0-based
-    expect(convertedDate.day).toEqual(hd);
+
+    // islamic-umalqura calendar gives the correct date
+    expect(convertedDate.year).toEqual(1444);
+    expect(convertedDate.month).toEqual(8); // Ramadan (0-based)
+    expect(convertedDate.day).toEqual(23);
   });
 
-  test("convertToGregorian should return the correct Gregorian date", () => {
-    const date = { year: 1444, month: 8, day: 21 }; // Hijri date: Ramadan 21, 1444 (0 based month)
-    // NOTE: jd_to_gregorian expects and returns 1-based months
-    const [gy, gm, gd] = CalendarUtils.jd_to_gregorian(
-      CalendarUtils.islamic_to_jd(date.year, date.month + 1, date.day)
-    );
-    const convertedDate = hijriCalendar.convertToGregorian(
-      date.year,
-      date.month,
-      date.day
-    );
-    expect(convertedDate.year).toEqual(gy);
-    expect(convertedDate.month).toEqual(gm - 1); // -1 because the jd_to_gregorian month is 1-based
-    expect(convertedDate.day).toEqual(gd);
+  test("convertFromGregorian should handle July 2025 dates correctly (Issue #7)", () => {
+    // This specifically tests the fix for Issue #7
+    const date1 = new Date(Date.UTC(2025, 6, 6, 12, 0, 0)); // July 6, 2025
+    const converted1 = hijriCalendar.convertFromGregorian(date1);
+
+    expect(converted1.year).toEqual(1447);
+    expect(converted1.month).toEqual(0); // Muharram
+    expect(converted1.day).toEqual(11); // islamic-umalqura gives 11, not 10
+
+    const date2 = new Date(Date.UTC(2025, 6, 5, 12, 0, 0)); // July 5, 2025
+    const converted2 = hijriCalendar.convertFromGregorian(date2);
+
+    expect(converted2.year).toEqual(1447);
+    expect(converted2.month).toEqual(0);
+    expect(converted2.day).toEqual(10);
+  });
+
+  test("convertToGregorian should use binary search with Intl API", () => {
+    // Test conversion from Hijri back to Gregorian
+    // Uses binary search since Intl API only works one way
+
+    // Ramadan 23, 1444 should be April 14, 2023
+    const convertedDate = hijriCalendar.convertToGregorian(1444, 8, 23);
+    expect(convertedDate.year).toEqual(2023);
+    expect(convertedDate.month).toEqual(3); // April (0-based)
+    expect(convertedDate.day).toEqual(14);
+  });
+
+  test("convertToGregorian should handle Muharram 1447 dates (Issue #7)", () => {
+    // Muharram 11, 1447 should be July 6, 2025
+    const converted1 = hijriCalendar.convertToGregorian(1447, 0, 11);
+    expect(converted1.year).toEqual(2025);
+    expect(converted1.month).toEqual(6); // July (0-based)
+    expect(converted1.day).toEqual(6);
+
+    // Muharram 10, 1447 should be July 5, 2025
+    const converted2 = hijriCalendar.convertToGregorian(1447, 0, 10);
+    expect(converted2.year).toEqual(2025);
+    expect(converted2.month).toEqual(6); // July (0-based)
+    expect(converted2.day).toEqual(5);
+  });
+
+  test("round-trip conversion should preserve dates", () => {
+    // Test that converting Gregorian -> Hijri -> Gregorian gives the same date
+    const originalDate = new Date(Date.UTC(2023, 3, 14, 12, 0, 0));
+    const hijri = hijriCalendar.convertFromGregorian(originalDate);
+    const backToGregorian = hijriCalendar.convertToGregorian(hijri.year, hijri.month, hijri.day);
+
+    expect(backToGregorian.year).toEqual(2023);
+    expect(backToGregorian.month).toEqual(3);
+    expect(backToGregorian.day).toEqual(14);
   });
 
   test("monthNames should return Hijri month names", () => {

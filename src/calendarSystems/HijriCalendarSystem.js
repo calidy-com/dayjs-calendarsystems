@@ -40,37 +40,67 @@ export default class HijriCalendarSystem extends CalendarSystemBase {
     minute = 0,
     second = 0
   ) {
-    // calendarMonth = calendarMonth+1 because the *_to_jd function month is 1-based
+    // First convert Hijri to Gregorian
+    const gregorian = this.convertToGregorian(
+      calendarYear,
+      calendarMonth,
+      calendarDay,
+      hour,
+      minute,
+      second
+    );
+
+    // Then convert Gregorian to Julian Day
     return (
-      CalendarUtils.islamic_to_jd(calendarYear, calendarMonth + 1,calendarDay) +
-      // TODO: Clarify why we do not need +0.5 to adjust the time to midnight.
-      0 +
-      Math.floor(second + 60 * (minute + 60 * hour) + 0.5) / 86400.0
+      CalendarUtils.gregorian_to_jd(
+        gregorian.year,
+        gregorian.month + 1,
+        gregorian.day
+      ) +
+      Math.floor(second + 60 * (minute + 60 * hour) + 0.5) / 86400.0 -
+      0.5
     );
   }
 
   convertFromGregorian(date) {
     date = this.validateDate(date);
 
-    const julianDay =
-      CalendarUtils.gregorian_to_jd(
-        date.getFullYear(),
-        date.getMonth() + 1,
-        date.getDate()
-      ) +
-      Math.floor(
-        date.getSeconds() +
-          60 * (date.getMinutes() + 60 * date.getHours()) +
-          0.5
-      ) /
-        86400.0 -
-      0.5;
-    const convertedDateArray = CalendarUtils.jd_to_islamic(julianDay);
-    return {
-      year: convertedDateArray[0],
-      month: convertedDateArray[1] - 1, // -1 because the month is 0-based
-      day: convertedDateArray[2],
-    };
+    // Use Intl.DateTimeFormat with islamic-umalqura calendar for accurate conversion
+    // The Islamic calendar has multiple variants; islamic-umalqura is based on astronomical
+    // observations and is the official calendar used in Saudi Arabia
+    const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      timeZone: 'UTC'
+    });
+
+    // Create a UTC date to avoid timezone issues
+    const utcDate = new Date(Date.UTC(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds(),
+      date.getMilliseconds()
+    ));
+
+    // Format the date and parse the parts
+    const parts = formatter.formatToParts(utcDate);
+    const hijriDate = {};
+
+    parts.forEach(part => {
+      if (part.type === 'year') {
+        hijriDate.year = parseInt(part.value, 10);
+      } else if (part.type === 'month') {
+        hijriDate.month = parseInt(part.value, 10) - 1; // Convert to 0-based
+      } else if (part.type === 'day') {
+        hijriDate.day = parseInt(part.value, 10);
+      }
+    });
+
+    return hijriDate;
   }
 
   // Returns a zero-based month index
@@ -84,20 +114,69 @@ export default class HijriCalendarSystem extends CalendarSystemBase {
     second = 0,
     millisecond = 0
   ) {
-    const julianDay = this.convertToJulian(
-      calendarYear,
-      calendarMonth,
-      calendarDay,
-      hour,
-      minute,
-      second,
-      millisecond
-    );
-    const gregorianDateArray = CalendarUtils.jd_to_gregorian(julianDay);
+    // Since Intl API only converts Gregorian->Hijri, we use binary search
+    // to find the Gregorian date that corresponds to the given Hijri date
+
+    // Approximate starting year: Hijri year 1 ≈ Gregorian year 622 CE
+    const approxYear = Math.floor(calendarYear - 1 + 622 + (calendarYear - 1) * 0.030684); // Adjust for year length difference
+
+    // Search within a range of ±2 years
+    let low = Date.UTC(approxYear - 2, 0, 1);
+    let high = Date.UTC(approxYear + 2, 11, 31);
+    let result = null;
+
+    // Binary search for the matching date
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      const midDate = new Date(mid);
+      const hijri = this.convertFromGregorian(midDate);
+
+      // Compare Hijri dates
+      if (hijri.year === calendarYear &&
+          hijri.month === calendarMonth &&
+          hijri.day === calendarDay) {
+        result = midDate;
+        break;
+      }
+
+      // Calculate comparison value
+      const hijriValue = hijri.year * 10000 + (hijri.month + 1) * 100 + hijri.day;
+      const targetValue = calendarYear * 10000 + (calendarMonth + 1) * 100 + calendarDay;
+
+      if (hijriValue < targetValue) {
+        low = mid + 86400000; // Add one day in milliseconds
+      } else {
+        high = mid - 86400000; // Subtract one day in milliseconds
+      }
+    }
+
+    if (!result) {
+      // Fallback: Use old Julian Day method if binary search fails
+      // This uses the arithmetic Islamic calendar as an approximation
+      const julianDay = CalendarUtils.islamic_to_jd(
+        calendarYear,
+        calendarMonth + 1,
+        calendarDay
+      ) + Math.floor(second + 60 * (minute + 60 * hour) + 0.5) / 86400.0;
+
+      const gregorianDateArray = CalendarUtils.jd_to_gregorian(julianDay);
+      return {
+        year: gregorianDateArray[0],
+        month: gregorianDateArray[1] - 1,
+        day: gregorianDateArray[2],
+      };
+    }
+
+    // Set the time components
+    result.setUTCHours(hour);
+    result.setUTCMinutes(minute);
+    result.setUTCSeconds(second);
+    result.setUTCMilliseconds(millisecond);
+
     return {
-      year: gregorianDateArray[0],
-      month: gregorianDateArray[1] - 1, // -1 because the Gregorian month is 0-based
-      day: gregorianDateArray[2],
+      year: result.getUTCFullYear(),
+      month: result.getUTCMonth(), // Already 0-based
+      day: result.getUTCDate(),
     };
   }
 
