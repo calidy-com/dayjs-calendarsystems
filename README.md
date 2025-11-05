@@ -20,6 +20,7 @@ Day.js Calendar Systems Plugin extends Day.js library to allow the use of differ
 * Arabic (a.k.a: Hijri, Islamic, Umalqura, Ghamari),
 * Hebrew (a.k.a: Jewish),
 * Amazigh (a.k.a: Berber),
+* **Mars (Darian Calendar)** - 🔴 For future Mars settlers and space enthusiasts!
 * and more to come (PRs are welcome).
 
 With this plugin, Day.js will be available to more than 200 million additional users worldwide (Estimated number of non-gregorian calendar users).
@@ -43,6 +44,7 @@ With the `@calidy/dayjs-calendarsystems` plugin, we bring the capacity to run an
 - 🌍 🗓️ 🇸🇦 Islamic (Hijri, Umalqura) Calendar system. Note: we will use the default "islamic-umalqura" calendar system for "islamic" calendar system.
 - 🌍 🗓️ 🇮🇱 Hebrew (Jewish) Calendar system.
 - 🌍 🗓️ ⵣ Amazigh (Berber) Calendar system.
+- 🔴 🗓️ 🚀 **Mars (Darian)** Calendar system - Perfect for space missions and future Mars colonization!
 - 🌍 🗓️ 🇪🇹 **[WIP]** Ethiopian Calendar system.
 - 🌍 🗓️ 🇮🇳 **[TODO]** Indian Calendar system.
 - 🌍 🗓️ 🇨🇳 **[TODO]** Chinese Calendar system.
@@ -125,3 +127,32 @@ If you have any issues or feature requests, please file issues and feature reque
 ## Acknowledgements
 * Day.js, for the amazing date library.
 * [Dayjs-Jalali-Plugin](https://github.com/zoomit-org/Dayjs-Jalali-Plugin) and [Jalaliday Plugin](https://github.com/alibaba-aero/jalaliday.git), for inspiring this project's Persian calendar integration.
+
+### Mars Calendar System
+The Mars calendar system implements the **Darian calendar**, designed for future human settlers on Mars. It's based on the Martian sol (solar day, 24h 39m 35s) and features 24 months per Mars year.
+
+```javascript
+import MarsCalendarSystem from "@calidy/dayjs-calendarsystems/calendarSystems/MarsCalendarSystem";
+
+// Register Mars calendar
+dayjs.registerCalendarSystem("mars", new MarsCalendarSystem());
+
+// Convert today's date to Mars
+let marsDate = dayjs().toCalendarSystem("mars");
+console.log(marsDate.format('YYYY-MM-DD')); // e.g., "0224-15-18"
+
+// Calculate sols since Perseverance landing
+const landing = dayjs('2021-02-18').toCalendarSystem('mars');
+const solsSinceLanding = marsDate.diff(landing, 'day');
+console.log(`Sols since landing: ${solsSinceLanding}`);
+```
+
+📖 **[Read the complete Mars Calendar documentation](MARS_CALENDAR.md)**
+
+Key features:
+- 🔴 24 months per year (alternating Latin/Sanskrit zodiac names)
+- 📅 668 or 669 sols per year (leap years)
+- 🚀 Perfect for Mars missions and space exploration
+- ⏱️ Accurate conversions between Earth and Mars time
+- 📊 Complete leap year calculations
+
