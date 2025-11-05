@@ -1,0 +1,32 @@
+# Configuration for auto-labeling PRs
+
+'calendar-system':
+  - 'src/calendarSystems/**'
+  - 'types/calendarSystems/**'
+
+'tests':
+  - 'test/**'
+
+'documentation':
+  - '**/*.md'
+  - 'docs/**'
+
+'examples':
+  - 'examples/**'
+
+'dependencies':
+  - 'package.json'
+  - 'package-lock.json'
+
+'ci/cd':
+  - '.github/**'
+
+'build':
+  - 'builder.js'
+  - 'rollup.config.js'
+
+'bug':
+  - any: ['**/fix/**', '**/bugfix/**']
+
+'enhancement':
+  - any: ['**/feat/**', '**/feature/**']
