@@ -26,6 +26,8 @@ jobs:
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
 
       - name: Run linter
         run: npm run lint
@@ -69,6 +71,8 @@ jobs:
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
 
       - name: Build package
         run: npm run build
