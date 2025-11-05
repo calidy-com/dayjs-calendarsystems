@@ -187,6 +187,24 @@ export default class HijriCalendarSystem extends CalendarSystemBase {
     return CalendarUtils.leap_islamic(year);
   }
 
+  /**
+   * Get the number of days in a Hijri month
+   *
+   * @param {number} year - Hijri year
+   * @param {number} month - Month (0-based, 0 = Muharram)
+   * @returns {number} Number of days in the month
+   */
+  daysInMonth(year, month) {
+    // In the Islamic calendar:
+    // Odd months (0, 2, 4, 6, 8, 10) have 30 days
+    // Even months (1, 3, 5, 7, 9) have 29 days
+    // Month 11 (Dhu al-Hijjah) has 29 days in common years and 30 days in leap years
+    if (month === 11) {
+      return this.isLeapYear(year) ? 30 : 29;
+    }
+    return (month % 2 === 0) ? 30 : 29;
+  }
+
   monthNames(
     locale = "en",
     calendar = "islamic-umalqura",

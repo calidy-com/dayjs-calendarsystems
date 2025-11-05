@@ -2198,7 +2198,7 @@ export {
     // hebrew_delay_1,
     // hebrew_delay_2,
     hebrew_leap,
-    // hebrew_month_days,
+    hebrew_month_days,
     hebrew_to_jd,
     // hebrew_year_days,
     // hebrew_year_months,

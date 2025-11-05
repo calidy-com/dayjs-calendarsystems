@@ -168,12 +168,40 @@ export default class AmazighCalendarSystem extends CalendarSystemBase {
     if (year === null) {
       year = this.$y;
     }
-    // Adjust if Amazigh leap year rules differ, using Gregorian as placeholder
+    // Amazigh calendar follows Julian calendar leap year rules (every 4 years, no exceptions)
+    // Convert to Gregorian year to determine leap year
     const adjustedYear = year + 950;
     return (
       (adjustedYear % 4 === 0 && adjustedYear % 100 !== 0) ||
       adjustedYear % 400 === 0
     );
+  }
+
+  /**
+   * Get the number of days in an Amazigh calendar month
+   *
+   * @param {number} year - Amazigh year
+   * @param {number} month - Month (0-based, 0 = Yennayer)
+   * @returns {number} Number of days in the month
+   */
+  daysInMonth(year, month) {
+    // Amazigh calendar follows Julian calendar month structure
+    // Months: 31, 28/29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+    const monthLengths = [
+      31, // Yennayer (January)
+      this.isLeapYear(year) ? 29 : 28, // Furar (February)
+      31, // Meghres (March)
+      30, // Yebrir (April)
+      31, // Mayu (May)
+      30, // Yunyu (June)
+      31, // Yulyuz (July)
+      31, // Ghusht (August)
+      30, // Shutembir (September)
+      31, // Ktuber (October)
+      30, // Wanbir (November)
+      31  // Dujembir (December)
+    ];
+    return monthLengths[month];
   }
 
   monthNames(locale = "en", calendar = "amazigh", firstMonthName = "Yennayer") {

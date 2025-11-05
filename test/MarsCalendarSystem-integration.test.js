@@ -181,8 +181,9 @@ describe("Mars Calendar System Integration", () => {
       // Get the Mars year
       const marsYear = date.$y;
 
-      // Check if it's a leap year
-      const isLeap = date.isLeapYear();
+      // Check if it's a leap year using the calendar system directly
+      const calendar = dayjs.getRegisteredCalendarSystem("mars");
+      const isLeap = calendar.isLeapYear(marsYear);
 
       // Verify against our leap year rules
       const shouldBeLeap = (marsYear % 2 === 1) ||
@@ -310,8 +311,11 @@ describe("Mars Calendar System Integration", () => {
     test("should calculate Mars year for future mission (2030)", () => {
       const futureMission = dayjs("2030-06-01").toCalendarSystem("mars");
 
-      expect(futureMission.$y).toBeGreaterThan(120);
-      expect(futureMission.$y).toBeLessThan(130);
+      // Mars epoch is Dec 29, 1873
+      // 2030 - 1873 = 157 Earth years
+      // 157 / 1.88 ≈ 83 Mars years
+      expect(futureMission.$y).toBeGreaterThan(82);
+      expect(futureMission.$y).toBeLessThan(85);
     });
   });
 });
