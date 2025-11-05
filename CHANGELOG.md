@@ -1,5 +1,54 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+# 📦 Release 2.0.1
+
+## 🚀 What's New
+
+### 🐛 Bug Fixes
+- Add daysInMonth methods and fix calendar system registry lookup
+- Correct calendar system tests based on real-world calendar rules
+- Resolve additional CI test failures
+
+### 📝 Other Changes
+- Merge pull request #12 from calidy-com/claude/investigate-issue-7-011CUoiHAFiFDxEGTnDj8ckR
+- Merge pull request #13 from calidy-com/claude/fix-calendar-tests-011CUoiHAFiFDxEGTnDj8ckR
+
+
+## 📥 Installation
+
+```bash
+npm install @calidy/dayjs-calendarsystems@2.0.1
+```
+
+or
+
+```bash
+yarn add @calidy/dayjs-calendarsystems@2.0.1
+```
+
+## 🔗 Links
+
+- 📦 [npm Package](https://www.npmjs.com/package/@calidy/dayjs-calendarsystems/v/2.0.1)
+- 📖 [Documentation](https://github.com/calidy-com/dayjs-calendarsystems/blob/main/README.md)
+- 🐛 [Report Issues](https://github.com/calidy-com/dayjs-calendarsystems/issues)
+- 💬 [Discussions](https://github.com/calidy-com/dayjs-calendarsystems/discussions)
+
+## 👥 Contributors
+
+Thank you to all contributors who made this release possible! 🎉
+
+---
+
+**Full Changelog**: https://github.com/calidy-com/dayjs-calendarsystems/compare/v2.0.0...v2.0.1
+# Changelog
+
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 ## [2.0.0](https://github.com/calidy-com/dayjs-calendarsystems/compare/v1.11.3...v2.0.0) (2025-11-05)
