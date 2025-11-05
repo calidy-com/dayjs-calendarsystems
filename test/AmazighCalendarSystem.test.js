@@ -92,10 +92,12 @@ describe("AmazighCalendarSystem", () => {
   describe("Leap Year Logic", () => {
     test("should correctly identify leap years", () => {
       // Amazigh calendar follows Gregorian leap year rules
-      expect(amazighCalendar.isLeapYear(2974)).toBe(true); // 2024 Gregorian (leap year)
-      expect(amazighCalendar.isLeapYear(2973)).toBe(false); // 2023 Gregorian
-      expect(amazighCalendar.isLeapYear(2972)).toBe(true); // 2022... wait, needs adjustment
-      expect(amazighCalendar.isLeapYear(2976)).toBe(true); // 2026 Gregorian (not a leap year)
+      // Amazigh year = Gregorian year + 950
+      expect(amazighCalendar.isLeapYear(2974)).toBe(true);  // 2024 Gregorian (leap year: 2024 % 4 == 0)
+      expect(amazighCalendar.isLeapYear(2973)).toBe(false); // 2023 Gregorian (not leap year)
+      expect(amazighCalendar.isLeapYear(2972)).toBe(false); // 2022 Gregorian (not leap year: 2022 % 4 == 2)
+      expect(amazighCalendar.isLeapYear(2976)).toBe(false); // 2026 Gregorian (not leap year: 2026 % 4 == 2)
+      expect(amazighCalendar.isLeapYear(2970)).toBe(true);  // 2020 Gregorian (leap year: 2020 % 4 == 0)
     });
 
     test("should handle century years correctly", () => {
@@ -222,20 +224,24 @@ describe("AmazighCalendarSystem", () => {
 
     test("should handle leap year February correctly", () => {
       // February 29, 2024 (leap year)
+      // Yennayer starts on Jan 14, so Furar starts on Feb 14
+      // Feb 29 = 15 days after Feb 14 = Furar 16 (29 - 14 + 1 = 16)
       const date = new Date(2024, 1, 29);
       const converted = amazighCalendar.convertFromGregorian(date);
       expect(converted.year).toBe(2974);
-      expect(converted.month).toBe(1); // Furar
-      expect(converted.day).toBe(29);
+      expect(converted.month).toBe(1); // Furar (February-March in Amazigh calendar)
+      expect(converted.day).toBe(16);  // Feb 29 is day 16 of Furar
     });
 
     test("should handle non-leap year February correctly", () => {
       // February 28, 2023 (non-leap year)
+      // Yennayer starts on Jan 14, so Furar starts on Feb 14
+      // Feb 28 = 14 days after Feb 14 = Furar 15 (28 - 14 + 1 = 15)
       const date = new Date(2023, 1, 28);
       const converted = amazighCalendar.convertFromGregorian(date);
       expect(converted.year).toBe(2973);
-      expect(converted.month).toBe(1); // Furar
-      expect(converted.day).toBe(28);
+      expect(converted.month).toBe(1); // Furar (February-March in Amazigh calendar)
+      expect(converted.day).toBe(15);  // Feb 28 is day 15 of Furar in non-leap year
     });
 
     test("should handle far future dates", () => {
