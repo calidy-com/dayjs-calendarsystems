@@ -109,6 +109,26 @@ export default class PersianCalendarSystem extends CalendarSystemBase {
     return CalendarUtils.leap_persiana(year);
   }
 
+  /**
+   * Get the number of days in a Persian calendar month
+   *
+   * @param {number} year - Persian year
+   * @param {number} month - Month (0-based, 0 = Farvardin)
+   * @returns {number} Number of days in the month
+   */
+  daysInMonth(year, month) {
+    // First 6 months (Farvardin-Shahrivar): 31 days
+    if (month < 6) {
+      return 31;
+    }
+    // Last month (Esfand): 29 days (30 in leap years)
+    if (month === 11) {
+      return this.isLeapYear(year) ? 30 : 29;
+    }
+    // Months 6-10 (Mehr-Bahman): 30 days
+    return 30;
+  }
+
   monthNames(
     locale = "en",
     calendar = "persian",

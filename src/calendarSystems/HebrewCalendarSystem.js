@@ -104,6 +104,20 @@ export default class HebrewCalendarSystem extends CalendarSystemBase {
     return CalendarUtils.hebrew_leap(year);
   }
 
+  /**
+   * Get the number of days in a Hebrew calendar month
+   *
+   * @param {number} year - Hebrew year
+   * @param {number} month - Month (0-based, 0 = Nisan)
+   * @returns {number} Number of days in the month
+   */
+  daysInMonth(year, month) {
+    // Use the fourmilabCalendar function which handles all the complex Hebrew calendar rules
+    // including variable-length Cheshvan and Kislev, and leap year Adar I/II
+    // Note: hebrew_month_days expects 1-based month, so we add 1
+    return CalendarUtils.hebrew_month_days(year, month + 1);
+  }
+
   monthNames(locale = "en", calendar = "hebrew", firstMonthName = "Nisan") {
     return generateMonthNames(locale, calendar, firstMonthName);
   }

@@ -66,10 +66,13 @@ export default (options, dayjsClass, dayjsFactory) => {
       const originalDaysInMonth = dayjsClass.prototype.daysInMonth;
       dayjsClass.prototype.daysInMonth = function () {
         if (this.$C && this.$C !== "gregory") {
-          return calendarSystem.daysInMonth(this.$y, this.$M);
-        } else {
-          return originalDaysInMonth.call(this);
+          // Get the correct calendar system from the registry using this.$C
+          const currentCalendarSystem = calendarSystems[this.$C];
+          if (currentCalendarSystem && typeof currentCalendarSystem.daysInMonth === "function") {
+            return currentCalendarSystem.daysInMonth(this.$y, this.$M);
+          }
         }
+        return originalDaysInMonth.call(this);
       };
     }
 
@@ -77,10 +80,12 @@ export default (options, dayjsClass, dayjsFactory) => {
       const originalStartOf = dayjsClass.prototype.startOf;
       dayjsClass.prototype.startOf = function (units) {
         if (this.$C && this.$C !== "gregory") {
-          return calendarSystem.startOf(this.$y, this.$M, this.$D, units);
-        } else {
-          return originalStartOf.call(this, units);
+          const currentCalendarSystem = calendarSystems[this.$C];
+          if (currentCalendarSystem && typeof currentCalendarSystem.startOf === "function") {
+            return currentCalendarSystem.startOf(this.$y, this.$M, this.$D, units);
+          }
         }
+        return originalStartOf.call(this, units);
       };
     }
 
@@ -88,10 +93,12 @@ export default (options, dayjsClass, dayjsFactory) => {
       const originalEndOf = dayjsClass.prototype.endOf;
       dayjsClass.prototype.endOf = function (units) {
         if (this.$C && this.$C !== "gregory") {
-          return calendarSystem.endOf(this.$y, this.$M, this.$D, units);
-        } else {
-          return originalEndOf.call(this, units);
+          const currentCalendarSystem = calendarSystems[this.$C];
+          if (currentCalendarSystem && typeof currentCalendarSystem.endOf === "function") {
+            return currentCalendarSystem.endOf(this.$y, this.$M, this.$D, units);
+          }
         }
+        return originalEndOf.call(this, units);
       };
     }
 
@@ -99,10 +106,12 @@ export default (options, dayjsClass, dayjsFactory) => {
       const originalIsLeapYear = dayjsClass.prototype.isLeapYear;
       dayjsClass.prototype.isLeapYear = function () {
         if (this.$C && this.$C !== "gregory") {
-          return calendarSystem.isLeapYear(this.$y);
-        } else {
-          return originalIsLeapYear.call(this);
+          const currentCalendarSystem = calendarSystems[this.$C];
+          if (currentCalendarSystem && typeof currentCalendarSystem.isLeapYear === "function") {
+            return currentCalendarSystem.isLeapYear(this.$y);
+          }
         }
+        return originalIsLeapYear.call(this);
       };
     }
   };
