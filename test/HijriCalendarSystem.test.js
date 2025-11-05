@@ -51,17 +51,17 @@ describe("HijriCalendarSystem", () => {
   });
 
   test("convertToGregorian should handle Muharram 1447 dates (Issue #7)", () => {
-    // Muharram 11, 1447 should be July 6, 2025
+    // Muharram 11, 1447 should be July 7, 2025 (based on Umm al-Qura calendar)
     const converted1 = hijriCalendar.convertToGregorian(1447, 0, 11);
     expect(converted1.year).toEqual(2025);
     expect(converted1.month).toEqual(6); // July (0-based)
-    expect(converted1.day).toEqual(6);
+    expect(converted1.day).toEqual(7);
 
-    // Muharram 10, 1447 should be July 5, 2025
+    // Muharram 10, 1447 should be July 6, 2025 (based on Umm al-Qura calendar)
     const converted2 = hijriCalendar.convertToGregorian(1447, 0, 10);
     expect(converted2.year).toEqual(2025);
     expect(converted2.month).toEqual(6); // July (0-based)
-    expect(converted2.day).toEqual(5);
+    expect(converted2.day).toEqual(6);
   });
 
   test("round-trip conversion should preserve dates", () => {

@@ -99,7 +99,7 @@ export default (options, dayjsClass, dayjsFactory) => {
       const originalIsLeapYear = dayjsClass.prototype.isLeapYear;
       dayjsClass.prototype.isLeapYear = function () {
         if (this.$C && this.$C !== "gregory") {
-          return calendarSystem.isLeapYear.call(this);
+          return calendarSystem.isLeapYear(this.$y);
         } else {
           return originalIsLeapYear.call(this);
         }

@@ -46,7 +46,10 @@ export default class GregoryCalendarSystem extends CalendarSystemBase {
     };
   }
 
-  isLeapYear() {
+  isLeapYear(year = null) {
+    if (year === null) {
+      year = this.$y;
+    }
     return year % 4 == 0 && !(year % 100 == 0 && year % 400 != 0);
   }
 
