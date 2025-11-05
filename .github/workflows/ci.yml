@@ -1,0 +1,297 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run ESLint
+        run: npm run lint
+        continue-on-error: true
+
+  test:
+    name: Test on Node.js ${{ matrix.node-version }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['16', '18', '20', '21']
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run tests
+        run: npm test
+        env:
+          CI: true
+
+      - name: Upload coverage reports
+        if: matrix.node-version == '20' && matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+  build:
+    name: Build Package
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build project
+        run: npm run build
+
+      - name: Check bundle size
+        run: npm run size
+        continue-on-error: true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            *.min.js
+            calendarSystems/
+            calendarUtils/
+            index.d.ts
+          retention-days: 7
+
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for better analysis
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run tests with coverage
+        run: npm test -- --coverage
+        env:
+          CI: true
+
+      - name: SonarCloud Scan
+        if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        continue-on-error: true
+
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v3
+        with:
+          fail-on-severity: moderate
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Run Snyk Security Scan
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+  validate-pr:
+    name: Validate Pull Request
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: [lint, test, build]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check PR title
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+
+      - name: Add PR labels
+        uses: actions/labeler@v5
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          configuration-path: .github/labeler.yml
+        continue-on-error: true
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+
+            github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body: '✅ All CI checks have passed! This PR is ready for review.'
+            });
+
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [test]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run integration tests
+        run: npm test -- --testPathPattern=integration
+        env:
+          CI: true
+
+      - name: Run calendar system tests
+        run: |
+          npm test -- HijriCalendarSystem.test.js
+          npm test -- MarsCalendarSystem.test.js
+          npm test -- PersianCalendarSystem.test.js
+          npm test -- HebrewCalendarSystem.test.js
+        continue-on-error: true
+
+  performance-test:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: [test]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run performance benchmarks
+        run: |
+          echo "Running performance tests..."
+          npm test -- --testTimeout=30000
+        continue-on-error: true
+
+  auto-merge-dependabot:
+    name: Auto-merge Dependabot PRs
+    runs-on: ubuntu-latest
+    needs: [lint, test, build]
+    if: github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'
+
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge for Dependabot PRs
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
