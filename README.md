@@ -45,7 +45,7 @@ With the `@calidy/dayjs-calendarsystems` plugin, we bring the capacity to run an
 - 🌍 🗓️ 🇮🇱 Hebrew (Jewish) Calendar system.
 - 🌍 🗓️ ⵣ Amazigh (Berber) Calendar system.
 - 🔴 🗓️ 🚀 **Mars (Darian)** Calendar system - Perfect for space missions and future Mars colonization!
-- 🌍 🗓️ 🇪🇹 **[WIP]** Ethiopian Calendar system.
+- 🌍 🗓️ 🇪🇹 Ethiopian Calendar system.
 - 🌍 🗓️ 🇮🇳 **[TODO]** Indian Calendar system.
 - 🌍 🗓️ 🇨🇳 **[TODO]** Chinese Calendar system.
 - 🌍 ✅ Fixes translations of month names in Dayjs for non-gregorian and gregorian calendar systems (This is based on my knowledge, please PR to add more fixes).
@@ -155,4 +155,31 @@ Key features:
 - 🚀 Perfect for Mars missions and space exploration
 - ⏱️ Accurate conversions between Earth and Mars time
 - 📊 Complete leap year calculations
+
+### Ethiopian Calendar System
+The Ethiopian calendar system (also called Ge'ez calendar) is the principal calendar used in Ethiopia and Eritrea. It is based on the Coptic calendar with different year numbering.
+
+```javascript
+import EthiopianCalendarSystem from "@calidy/dayjs-calendarsystems/calendarSystems/EthiopianCalendarSystem";
+
+// Register Ethiopian calendar
+dayjs.registerCalendarSystem("ethiopian", new EthiopianCalendarSystem());
+
+// Convert today's date to Ethiopian
+let ethiopianDate = dayjs().toCalendarSystem("ethiopian");
+console.log(ethiopianDate.format('YYYY-MM-DD')); // e.g., "2016-03-15"
+
+// Create date from Ethiopian calendar
+const enkutatash = dayjs.fromCalendarSystem('ethiopian', 2016, 1, 1); // Ethiopian New Year
+console.log(enkutatash.format('MMMM D, YYYY')); // Meskerem 1, 2016
+```
+
+Key features:
+- 🇪🇹 13 months per year (12 months of 30 days + Pagumen with 5-6 days)
+- 📅 365 days (regular) or 366 days (leap years)
+- 🗓️ Approximately 7-8 years behind the Gregorian calendar
+- 🎊 New Year (Enkutatash) on September 11 (or 12 in leap years)
+- ⛪ Used officially in Ethiopia and Eritrea
+- 📊 Leap year when (year + 1) % 4 == 0
+- 🌞 Solar calendar with seasons aligned
 
