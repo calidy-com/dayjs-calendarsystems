@@ -46,8 +46,8 @@ With the `@calidy/dayjs-calendarsystems` plugin, we bring the capacity to run an
 - 🌍 🗓️ ⵣ Amazigh (Berber) Calendar system.
 - 🔴 🗓️ 🚀 **Mars (Darian)** Calendar system - Perfect for space missions and future Mars colonization!
 - 🌍 🗓️ 🇪🇹 Ethiopian Calendar system.
+- 🌍 🗓️ 🇨🇳 Chinese Calendar system.
 - 🌍 🗓️ 🇮🇳 **[TODO]** Indian Calendar system.
-- 🌍 🗓️ 🇨🇳 **[TODO]** Chinese Calendar system.
 - 🌍 ✅ Fixes translations of month names in Dayjs for non-gregorian and gregorian calendar systems (This is based on my knowledge, please PR to add more fixes).
 - **[TODO]** Parse date strings from different calendar systems
 - **[TODO]** Add more tests for all Dayjs Plugins
@@ -182,4 +182,38 @@ Key features:
 - ⛪ Used officially in Ethiopia and Eritrea
 - 📊 Leap year when (year + 1) % 4 == 0
 - 🌞 Solar calendar with seasons aligned
+
+### Chinese Calendar System
+The Chinese calendar is a lunisolar calendar that has been in continuous use for over 2000 years. It combines lunar month cycles with solar year calculations and is used throughout East Asia.
+
+```javascript
+import ChineseCalendarSystem from "@calidy/dayjs-calendarsystems/calendarSystems/ChineseCalendarSystem";
+
+// Register Chinese calendar
+dayjs.registerCalendarSystem("chinese", new ChineseCalendarSystem());
+
+// Convert today's date to Chinese
+let chineseDate = dayjs().toCalendarSystem("chinese");
+console.log(chineseDate.format('YYYY-MM-DD')); // e.g., "4721-03-15"
+
+// Get zodiac animal for a year
+const calendar = new ChineseCalendarSystem();
+const zodiac = calendar.getZodiacAnimal(4721);
+console.log(zodiac); // "Dragon"
+
+// Get sexagenary cycle information
+const cycle = calendar.getSexagenaryCycle(4721);
+console.log(cycle.cycleName); // e.g., "Jiǎ-Chén"
+```
+
+Key features:
+- 🇨🇳 Lunisolar calendar (lunar months + solar year alignment)
+- 📅 12 or 13 months per year (leap months ~7 times in 19 years)
+- 🌙 29 or 30 days per month (based on lunar cycle)
+- 🐉 12 zodiac animals rotating each year
+- 🔄 60-year sexagenary cycle (Heavenly Stems + Earthly Branches)
+- 🎊 New Year (Spring Festival) between January 21 and February 20
+- 🌾 24 solar terms guide agricultural activities
+- 🌏 Used by over 1.5 billion people worldwide
+- 🎉 Determines traditional Chinese festivals and holidays
 
