@@ -97,16 +97,16 @@ console.log(nowruz.format('YYYY-MM-DD')); // "2024-03-20"
 | **Chinese** 🇨🇳 | East Asia (~1.5B) | ✅ Production | `ChineseCalendarSystem` |
 | **Amazigh** (Berber) ⵣ | North Africa (~30M) | ✅ Production | `AmazighCalendarSystem` |
 | **Mars** (Darian) 🔴 | Future Mars settlers 🚀 | ✅ Production | `MarsCalendarSystem` |
-| **Indian** 🇮🇳 | India | 🚧 Coming Soon | — |
+| **Indian** (Saka) 🇮🇳 | India (Official) (~1.4B) | ✅ Production | `IndianCalendarSystem` |
 
-**Total reach: 3.5+ billion potential users worldwide!**
+**Total reach: 4.9+ billion potential users worldwide!**
 
 ---
 
 ## ✨ Features
 
 ### Core Features
-- ✅ **8 calendar systems** (7 implemented + 1 in development)
+- ✅ **8 calendar systems** (all production-ready)
 - ✅ **Full Day.js API compatibility** - use all methods you know and love
 - ✅ **Bidirectional conversions** - convert between any calendar systems
 - ✅ **TypeScript support** with complete type definitions
@@ -427,6 +427,47 @@ console.log(`Sols since landing: ${solsSince}`);
 - Sci-fi applications
 
 **📖 [Complete Mars Calendar Documentation](MARS_CALENDAR.md)**
+
+---
+
+### 8. Indian National Calendar (Saka)
+
+The Indian National Calendar, also called the Saka calendar, is the official civil calendar of India, adopted in 1957 alongside the Gregorian calendar for government use.
+
+```javascript
+import IndianCalendarSystem from '@calidy/dayjs-calendarsystems/calendarSystems/IndianCalendarSystem';
+
+dayjs.registerCalendarSystem('indian', new IndianCalendarSystem());
+
+const indianDate = dayjs().toCalendarSystem('indian');
+console.log(indianDate.format('YYYY-MM-DD')); // e.g., "1946-08-20"
+
+// Indian Independence Day
+const independence = dayjs('1947-08-15').toCalendarSystem('indian');
+console.log(`Independence: Saka ${independence.year()}, ${independence.format('MMMM DD')}`);
+```
+
+**Key Features:**
+- 🇮🇳 Official calendar of India (adopted 1957)
+- ☀️ Solar calendar with 12 months
+- 📅 365 days (366 in leap years)
+- 🗓️ Year 0 = 78 CE (Saka era)
+- 🎊 New Year (Chaitra 1) on March 21/22
+- ⚖️ Synchronized leap years with Gregorian
+- 📜 Based on astronomical calculations by Dr. Meghnad Saha
+- 🏛️ Used in official Indian government publications
+
+**Month Structure:**
+- Chaitra (1st month): 30 days (31 in leap years)
+- Vaisakha to Bhadra (months 2-6): 31 days each
+- Asvina to Phalguna (months 7-12): 30 days each
+
+**Common Use Cases:**
+- Indian government documents
+- All India Radio broadcasts
+- Gazette of India publications
+- Cultural and religious observances
+- Historical date conversions
 
 ---
 
