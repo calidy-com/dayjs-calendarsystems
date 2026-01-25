@@ -17,9 +17,7 @@
     "sauce": "npx karma start karma.sauce.conf.js",
     "test:sauce": "npm run sauce -- 0 && npm run sauce -- 1 && npm run sauce -- 2  && npm run sauce -- 3",
     "size": "size-limit",
-    "release": "standard-version $* && git push --follow-tags && yarn run npmpublish",
-    "prepublishOnly": "npm run build",
-    "npmpublish": "npm publish --access public --auth-type legacy"
+    "prepublishOnly": "npm run build"
   },
   "pre-commit": [
     "lint"
@@ -142,7 +140,6 @@
     "prettier": "^3.3.3",
     "rollup": "^4.18.1",
     "size-limit": "^11.1.4",
-    "standard-version": "^9.5.0",
     "typescript": "^5.5.3"
   }
 }
