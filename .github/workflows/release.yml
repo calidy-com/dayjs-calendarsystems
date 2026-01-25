@@ -1,20 +1,61 @@
-name: Release & Publish
+name: Manual Release & Publish
+
+# This workflow serves as a manual fallback for releases.
+# The primary automated release process is handled by release-please.yml
+# Use this workflow only when you need to manually trigger a release.
 
 on:
-  release:
-    types: [published]
-  push:
-    tags:
-      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 2.1.0)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Is this a prerelease?'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
-  id-token: write  # Required for OIDC
-  contents: read
-  
+  contents: write
+  id-token: write  # Required for npm provenance
+
 jobs:
+  validate:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.validate.outputs.version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate version format
+        id: validate
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
+            echo "::error::Invalid version format. Expected: X.Y.Z or X.Y.Z-prerelease"
+            exit 1
+          fi
+
+          # Check if tag already exists
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "::error::Tag v$VERSION already exists"
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "::notice::Validated version: $VERSION"
+
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
+    needs: validate
 
     steps:
       - name: Checkout code
@@ -56,16 +97,99 @@ jobs:
             index.d.ts
           retention-days: 7
 
-  publish-npm:
-    name: Publish to npm
+  create-release:
+    name: Create Release
     runs-on: ubuntu-latest
-    needs: build-and-test
+    needs: [validate, build-and-test]
+    outputs:
+      tag_name: ${{ steps.tag.outputs.tag_name }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Update package.json version
+        run: |
+          npm version ${{ needs.validate.outputs.version }} --no-git-tag-version
+          git add package.json
+          git commit -m "chore: release v${{ needs.validate.outputs.version }}"
+          git push origin main
+
+      - name: Create and push tag
+        id: tag
+        run: |
+          TAG_NAME="v${{ needs.validate.outputs.version }}"
+          git tag -a "$TAG_NAME" -m "Release $TAG_NAME"
+          git push origin "$TAG_NAME"
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+
+      - name: Get previous tag
+        id: previous_tag
+        run: |
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -v "${{ steps.tag.outputs.tag_name }}" | head -n1)
+          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+          echo "Previous tag: $PREVIOUS_TAG"
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          VERSION="${{ needs.validate.outputs.version }}"
+          PREVIOUS_TAG="${{ steps.previous_tag.outputs.previous_tag }}"
+          TAG_NAME="${{ steps.tag.outputs.tag_name }}"
+
+          cat > RELEASE_NOTES.md << EOF
+          ## What's Changed
+
+          EOF
+
+          if [ -n "$PREVIOUS_TAG" ]; then
+            git log ${PREVIOUS_TAG}..${TAG_NAME} --pretty=format:"* %s (%h)" >> RELEASE_NOTES.md
+            echo "" >> RELEASE_NOTES.md
+            echo "" >> RELEASE_NOTES.md
+            echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREVIOUS_TAG}...${TAG_NAME}" >> RELEASE_NOTES.md
+          else
+            echo "Initial release" >> RELEASE_NOTES.md
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag_name }}
+          name: Release ${{ steps.tag.outputs.tag_name }}
+          body_path: RELEASE_NOTES.md
+          draft: false
+          prerelease: ${{ github.event.inputs.prerelease }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-npm:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    needs: [validate, create-release]
+
+    permissions:
+      contents: read
+      id-token: write  # Required for npm provenance
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: v${{ needs.validate.outputs.version }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -81,222 +205,71 @@ jobs:
       - name: Build package
         run: npm run build
 
-      - name: Get version from tag
-        id: get_version
-        run: |
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
-            echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-          else
-            echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-          fi
-
-      #- name: Publish to npm
-      #  run: npm publish --access public
-      #  env:
-      #    NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Publish to npm
-        run: npm publish
+      - name: Publish to npm with provenance
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Notify success
         run: |
-          echo "✅ Successfully published @calidy/dayjs-calendarsystems@${{ steps.get_version.outputs.VERSION }} to npm"
-          echo "📦 Package URL: https://www.npmjs.com/package/@calidy/dayjs-calendarsystems/v/${{ steps.get_version.outputs.VERSION }}"
+          echo "::notice::Successfully published @calidy/dayjs-calendarsystems@${{ needs.validate.outputs.version }} to npm"
+          echo "Package URL: https://www.npmjs.com/package/@calidy/dayjs-calendarsystems/v/${{ needs.validate.outputs.version }}"
 
-  create-release:
-    name: Create GitHub Release
+  upload-release-assets:
+    name: Upload Release Assets
     runs-on: ubuntu-latest
-    needs: publish-npm
-    if: startsWith(github.ref, 'refs/tags/')
+    needs: [validate, create-release, publish-npm]
+
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: v${{ needs.validate.outputs.version }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Get version from tag
-        id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
 
-      - name: Get previous tag
-        id: previous_tag
-        run: |
-          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -A1 ${{ github.ref_name }} | tail -n1)
-          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
-          echo "Previous tag: $PREVIOUS_TAG"
+      - name: Build package
+        run: npm run build
 
-      - name: Generate changelog
-        id: changelog
-        run: |
-          echo "Generating changelog from ${{ steps.previous_tag.outputs.PREVIOUS_TAG }} to ${{ github.ref_name }}"
-
-          # Create changelog header
-          cat > RELEASE_CHANGELOG.md << 'CHANGELOG_START'
-          # 📦 Release ${{ steps.get_version.outputs.VERSION }}
-
-          ## 🚀 What's New
-
-          CHANGELOG_START
-
-          # Get all commits between tags
-          if [ -n "${{ steps.previous_tag.outputs.PREVIOUS_TAG }}" ]; then
-            git log ${{ steps.previous_tag.outputs.PREVIOUS_TAG }}..${{ github.ref_name }} --pretty=format:"%s" | while read line; do
-              # Categorize commits
-              if echo "$line" | grep -q "^feat"; then
-                echo "### ✨ Features" >> FEATURES.tmp
-                echo "- ${line#feat: }" >> FEATURES.tmp
-              elif echo "$line" | grep -q "^fix"; then
-                echo "### 🐛 Bug Fixes" >> FIXES.tmp
-                echo "- ${line#fix: }" >> FIXES.tmp
-              elif echo "$line" | grep -q "^docs"; then
-                echo "### 📚 Documentation" >> DOCS.tmp
-                echo "- ${line#docs: }" >> DOCS.tmp
-              elif echo "$line" | grep -q "^test"; then
-                echo "### ✅ Tests" >> TESTS.tmp
-                echo "- ${line#test: }" >> TESTS.tmp
-              elif echo "$line" | grep -q "^chore"; then
-                echo "### 🔧 Maintenance" >> CHORE.tmp
-                echo "- ${line#chore: }" >> CHORE.tmp
-              elif echo "$line" | grep -q "^perf"; then
-                echo "### ⚡ Performance" >> PERF.tmp
-                echo "- ${line#perf: }" >> PERF.tmp
-              elif echo "$line" | grep -q "^refactor"; then
-                echo "### ♻️ Refactoring" >> REFACTOR.tmp
-                echo "- ${line#refactor: }" >> REFACTOR.tmp
-              elif echo "$line" | grep -q "^style"; then
-                echo "### 💄 Styling" >> STYLE.tmp
-                echo "- ${line#style: }" >> STYLE.tmp
-              elif echo "$line" | grep -q "^ci"; then
-                echo "### 👷 CI/CD" >> CI.tmp
-                echo "- ${line#ci: }" >> CI.tmp
-              else
-                echo "### 📝 Other Changes" >> OTHER.tmp
-                echo "- $line" >> OTHER.tmp
-              fi
-            done
-
-            # Combine all sections
-            [ -f FEATURES.tmp ] && cat FEATURES.tmp | sort -u >> RELEASE_CHANGELOG.md && echo "" >> RELEASE_CHANGELOG.md
-            [ -f FIXES.tmp ] && cat FIXES.tmp | sort -u >> RELEASE_CHANGELOG.md && echo "" >> RELEASE_CHANGELOG.md
-            [ -f PERF.tmp ] && cat PERF.tmp | sort -u >> RELEASE_CHANGELOG.md && echo "" >> RELEASE_CHANGELOG.md
-            [ -f DOCS.tmp ] && cat DOCS.tmp | sort -u >> RELEASE_CHANGELOG.md && echo "" >> RELEASE_CHANGELOG.md
-            [ -f TESTS.tmp ] && cat TESTS.tmp | sort -u >> RELEASE_CHANGELOG.md && echo "" >> RELEASE_CHANGELOG.md
-            [ -f REFACTOR.tmp ] && cat REFACTOR.tmp | sort -u >> RELEASE_CHANGELOG.md && echo "" >> RELEASE_CHANGELOG.md
-            [ -f STYLE.tmp ] && cat STYLE.tmp | sort -u >> RELEASE_CHANGELOG.md && echo "" >> RELEASE_CHANGELOG.md
-            [ -f CI.tmp ] && cat CI.tmp | sort -u >> RELEASE_CHANGELOG.md && echo "" >> RELEASE_CHANGELOG.md
-            [ -f CHORE.tmp ] && cat CHORE.tmp | sort -u >> RELEASE_CHANGELOG.md && echo "" >> RELEASE_CHANGELOG.md
-            [ -f OTHER.tmp ] && cat OTHER.tmp | sort -u >> RELEASE_CHANGELOG.md && echo "" >> RELEASE_CHANGELOG.md
-
-            # Clean up temp files
-            rm -f *.tmp
-          fi
-
-          # Add installation and links sections
-          cat >> RELEASE_CHANGELOG.md << 'CHANGELOG_END'
-
-          ## 📥 Installation
-
-          ```bash
-          npm install @calidy/dayjs-calendarsystems@${{ steps.get_version.outputs.VERSION }}
-          ```
-
-          or
-
-          ```bash
-          yarn add @calidy/dayjs-calendarsystems@${{ steps.get_version.outputs.VERSION }}
-          ```
-
-          ## 🔗 Links
-
-          - 📦 [npm Package](https://www.npmjs.com/package/@calidy/dayjs-calendarsystems/v/${{ steps.get_version.outputs.VERSION }})
-          - 📖 [Documentation](https://github.com/${{ github.repository }}/blob/main/README.md)
-          - 🐛 [Report Issues](https://github.com/${{ github.repository }}/issues)
-          - 💬 [Discussions](https://github.com/${{ github.repository }}/discussions)
-
-          ## 👥 Contributors
-
-          Thank you to all contributors who made this release possible! 🎉
-
-          ---
-
-          **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.previous_tag.outputs.PREVIOUS_TAG }}...${{ github.ref_name }}
-          CHANGELOG_END
-
-          # Output for debugging
-          cat RELEASE_CHANGELOG.md
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
         with:
-          name: 🚀 Release v${{ steps.get_version.outputs.VERSION }}
-          body_path: RELEASE_CHANGELOG.md
-          draft: false
-          prerelease: false
-          generate_release_notes: true
+          tag_name: ${{ needs.create-release.outputs.tag_name }}
           files: |
             *.min.js
-            LICENSE
+            LICENSE.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update CHANGELOG.md
-        run: |
-          # Prepend new release to CHANGELOG.md
-          if [ -f CHANGELOG.md ]; then
-            cat RELEASE_CHANGELOG.md CHANGELOG.md > CHANGELOG_NEW.md
-            mv CHANGELOG_NEW.md CHANGELOG.md
-          else
-            cp RELEASE_CHANGELOG.md CHANGELOG.md
-          fi
-
-          # Add header to CHANGELOG.md
-          cat > CHANGELOG_HEADER.md << 'HEADER'
-          # Changelog
-
-          All notable changes to this project will be documented in this file.
-
-          The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-          and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-          ---
-
-          HEADER
-
-          cat CHANGELOG_HEADER.md CHANGELOG.md > CHANGELOG_FINAL.md
-          mv CHANGELOG_FINAL.md CHANGELOG.md
-          rm CHANGELOG_HEADER.md RELEASE_CHANGELOG.md
-
-      - name: Commit updated CHANGELOG
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add CHANGELOG.md
-          git commit -m "docs: update CHANGELOG.md for v${{ steps.get_version.outputs.VERSION }}" || echo "No changes to commit"
-          git push origin HEAD:main || echo "Failed to push changelog update"
-        continue-on-error: true
-
   notify-completion:
-    name: Notify Release Completion
+    name: Release Notification
     runs-on: ubuntu-latest
-    needs: [publish-npm, create-release]
+    needs: [validate, publish-npm, upload-release-assets]
     if: always()
 
     steps:
-      - name: Check success
+      - name: Check release status
         run: |
-          if [ "${{ needs.publish-npm.result }}" == "success" ] && [ "${{ needs.create-release.result }}" == "success" ]; then
-            echo "🎉 Release completed successfully!"
-            echo "✅ Published to npm"
-            echo "✅ GitHub release created"
-            echo "✅ Changelog generated"
+          if [ "${{ needs.publish-npm.result }}" == "success" ]; then
+            echo "::notice::Release v${{ needs.validate.outputs.version }} completed successfully!"
+            echo ""
+            echo "Summary:"
+            echo "  - Version: ${{ needs.validate.outputs.version }}"
+            echo "  - npm: https://www.npmjs.com/package/@calidy/dayjs-calendarsystems"
+            echo "  - GitHub: https://github.com/${{ github.repository }}/releases/tag/v${{ needs.validate.outputs.version }}"
           else
-            echo "❌ Release failed!"
+            echo "::error::Release failed!"
             echo "npm publish: ${{ needs.publish-npm.result }}"
-            echo "GitHub release: ${{ needs.create-release.result }}"
             exit 1
           fi
