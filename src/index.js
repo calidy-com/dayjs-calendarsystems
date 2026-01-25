@@ -429,20 +429,33 @@ export default (options, dayjsClass, dayjsFactory) => {
       // Store the target calendar system in $C
       newInstance.$C = calendar;
     }
-    // Update the locale to reflect the new calendar system
-    dayjsFactory.updateLocale(
-      newInstance.$L,
-      calendarSystems[calendar].localeOverride(newInstance.$L)
+
+    // Store the calendar-specific locale override on the instance itself.
+    // IMPORTANT: We intentionally do NOT call dayjsFactory.updateLocale() here.
+    // Mutating the global locale would cause all dayjs instances to use this
+    // calendar's month names, breaking the expected behavior where only this
+    // specific instance should be affected. See GitHub issue #18.
+    newInstance.$calendarLocale = calendarSystems[calendar].localeOverride(
+      newInstance.$L
     );
-    // dayjsFactory.locale(
-    //   newInstance.$L,
-    //   {
-    //     ...newInstance.$locale(),
-    //     ...calendarSystems[calendar].localeOverride(newInstance.$L),
-    //   },
-    //   true
-    // );
+
     return newInstance;
+  };
+
+  // Override $locale() to return instance-specific calendar locale when available.
+  // This ensures format() uses the correct month names for the calendar system
+  // without mutating the global locale. See GitHub issue #18.
+  const old$locale = dayjsClass.prototype.$locale;
+  dayjsClass.prototype.$locale = function () {
+    const baseLocale = old$locale.call(this);
+    // If this instance has calendar-specific locale overrides, merge them
+    if (this.$calendarLocale) {
+      return {
+        ...baseLocale,
+        ...this.$calendarLocale,
+      };
+    }
+    return baseLocale;
   };
 
   // Handle locale inconsistencies if any:
@@ -472,7 +485,16 @@ export default (options, dayjsClass, dayjsFactory) => {
   const oldLocale = dayjsClass.prototype.locale;
   dayjsClass.prototype.locale = function (preset, object) {
     object = handleLocale(preset, object, this.$C || "gregory");
-    return oldLocale.bind(this)(preset, object);
+    const result = oldLocale.bind(this)(preset, object);
+    // When locale changes on an instance with a calendar system,
+    // regenerate the instance-specific calendar locale for the new locale.
+    // This ensures month names are correct for the new locale.
+    if (this.$C && this.$C !== "gregory" && calendarSystems[this.$C]) {
+      result.$calendarLocale = calendarSystems[this.$C].localeOverride(
+        result.$L
+      );
+    }
+    return result;
   };
 
   const oldDayjsFactoryLocale = dayjsFactory.locale;
